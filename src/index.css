@@ -2455,3 +2455,478 @@ input, textarea, select {
   }
 }
 
+/* ==========================================================================
+   ABOUT PAGE (.about-page)
+   ========================================================================== */
+.about-page {
+  background-color: #f8fafc;
+  padding-bottom: 70px;
+}
+
+/* 1. Intro Section: Story + Instructor Card */
+.about-intro-section {
+  padding: 50px 0 40px;
+}
+
+.about-intro-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.about-story {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.about-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(0, 26, 51, 0.06);
+  color: var(--color-navy);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  align-self: flex-start;
+  border: 1px solid rgba(0, 26, 51, 0.1);
+}
+
+.about-heading {
+  font-size: clamp(24px, 3.2vw, 32px);
+  font-weight: 800;
+  color: var(--color-navy);
+  line-height: 1.25;
+  margin: 0;
+}
+
+.about-lead {
+  font-size: 16px;
+  line-height: 1.65;
+  color: #334155;
+  font-weight: 500;
+  margin: 0;
+}
+
+.about-text {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #475569;
+  margin: 0;
+}
+
+.about-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 8px 0;
+  list-style: none;
+  padding: 0;
+}
+
+.about-checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14.5px;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.about-checklist-icon {
+  color: #16a34a;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Instructor Card */
+.about-instructor-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 30px rgba(0, 26, 51, 0.08);
+  overflow: hidden;
+}
+
+.about-instructor-media {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  background-color: #001a33;
+}
+
+.about-instructor-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.about-instructor-pill {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  background-color: var(--color-yellow);
+  color: var(--color-navy);
+  font-weight: 800;
+  font-size: 12.5px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.about-instructor-body {
+  padding: 24px;
+}
+
+.about-instructor-name {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--color-navy);
+  margin: 0 0 4px;
+}
+
+.about-instructor-role {
+  font-size: 13.5px;
+  color: #64748b;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
+.about-instructor-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 16px;
+}
+
+.about-instructor-meta-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.about-instructor-meta-label {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  color: #94a3b8;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.about-instructor-meta-value {
+  font-size: 13.5px;
+  color: #0f172a;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.about-instructor-quote {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #334155;
+  font-style: italic;
+  margin: 0;
+  position: relative;
+  padding-left: 18px;
+  border-left: 3px solid var(--color-yellow);
+}
+
+/* 2. Pillars Section (De 4 Beloften) */
+.about-pillars-section {
+  padding: 30px 0 40px;
+}
+
+.about-section-header {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 36px;
+}
+
+.about-section-kicker {
+  display: inline-block;
+  font-size: 12.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #0284c7;
+  margin-bottom: 8px;
+}
+
+.about-section-title {
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 800;
+  color: var(--color-navy);
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+
+.about-section-desc {
+  font-size: 14.5px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.about-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+
+.about-pillar-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 26px 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 26, 51, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.about-pillar-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px rgba(0, 26, 51, 0.08);
+}
+
+.about-pillar-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  background-color: rgba(0, 26, 51, 0.05);
+  color: var(--color-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.about-pillar-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-navy);
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.about-pillar-desc {
+  font-size: 13.5px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 3. Steps Roadmap Section */
+.about-steps-section {
+  padding: 40px 0;
+}
+
+.about-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  position: relative;
+}
+
+.about-step-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 26, 51, 0.04);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.about-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-yellow);
+  color: var(--color-navy);
+  font-weight: 800;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.about-step-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-navy);
+  margin: 0 0 8px;
+}
+
+.about-step-desc {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 4. Car Spotlight Card */
+.about-car-section {
+  padding: 30px 0;
+}
+
+.about-car-banner {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 30px rgba(0, 26, 51, 0.06);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+.about-car-media {
+  height: 100%;
+  min-height: 320px;
+  position: relative;
+  background-color: #001a33;
+}
+
+.about-car-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.about-car-content {
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.about-car-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-navy);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.about-car-desc {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.about-car-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.about-car-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f1f5f9;
+  color: #1e293b;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 6px;
+}
+
+/* 5. CTA Banner */
+.about-cta-card {
+  margin-top: 40px;
+  background-color: var(--color-navy);
+  border-radius: 14px;
+  padding: 44px 36px;
+  text-align: center;
+  color: #ffffff;
+  box-shadow: 0 12px 36px rgba(0, 26, 51, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-cta-title {
+  font-size: clamp(22px, 3.2vw, 28px);
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 10px;
+}
+
+.about-cta-desc {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 600px;
+  margin: 0 auto 26px;
+  line-height: 1.6;
+}
+
+.about-cta-btns {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .about-intro-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .about-pillars-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .about-steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .about-car-banner {
+    grid-template-columns: 1fr;
+  }
+  .about-car-media {
+    min-height: 240px;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-intro-section {
+    padding: 30px 0;
+  }
+  .about-pillars-grid {
+    grid-template-columns: 1fr;
+  }
+  .about-steps-grid {
+    grid-template-columns: 1fr;
+  }
+  .about-car-content {
+    padding: 24px 18px;
+  }
+  .about-cta-card {
+    padding: 32px 20px;
+  }
+  .about-cta-btns {
+    flex-direction: column;
+  }
+  .about-cta-btns .btn {
+    width: 100%;
+  }
+}
+
+
