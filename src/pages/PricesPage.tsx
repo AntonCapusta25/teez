@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HeadPage } from '../components/HeadPage';
-import { Check } from 'lucide-react';
+import { Check, Star } from 'lucide-react';
 import { getPricingData, formatEuro } from '../lib/packageStore';
 
 interface PricesPageProps {
@@ -77,6 +77,14 @@ export const PricesPage: React.FC<PricesPageProps> = ({ onNavigate }) => {
                 >
                   Bestel {pkg.id}
                 </button>
+
+                {pkg.popular && (
+                  <div className="price-card__stars" style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginTop: '14px', color: '#ffea00' }}>
+                    <Star size={16} fill="#ffea00" />
+                    <Star size={16} fill="#ffea00" />
+                    <Star size={16} fill="#ffea00" />
+                  </div>
+                )}
               </div>
             ))}
           </div>

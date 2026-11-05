@@ -24,6 +24,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
@@ -159,12 +160,17 @@ button {
   letter-spacing: 0.5px;
   color: var(--color-dark);
   background-color: var(--color-yellow);
-  border-radius: 2px;
+  user-select: none;
 }
 
 .btn:hover:not(:disabled) {
   background-color: var(--color-yellow-hover);
   box-shadow: 0 4px 10px rgba(255, 234, 0, 0.4);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(255, 234, 0, 0.3);
 }
 
 .btn:disabled {
@@ -271,9 +277,28 @@ button {
 .tiser__slider-stage {
   position: relative;
   min-height: 580px;
+  overflow: hidden;
+  background-color: #001325;
+}
+
+.tiser__slide-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-size: cover;
   background-position: center;
-  transition: background-image 0.5s ease-in-out;
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.tiser__slide-bg.active {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .tiser__overlay {
@@ -282,7 +307,8 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, rgba(0, 19, 37, 0.75) 0%, rgba(0, 19, 37, 0.3) 50%, rgba(0, 19, 37, 0.6) 100%);
+  z-index: 2;
+  background: linear-gradient(90deg, rgba(0, 19, 37, 0.82) 0%, rgba(0, 19, 37, 0.35) 50%, rgba(0, 19, 37, 0.7) 100%);
 }
 
 .tiser__content {
@@ -1526,30 +1552,49 @@ button {
   }
 }
 
-/* Modal */
+/* Modal Animation */
+@keyframes modalBackdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 .modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(3px);
+  background-color: rgba(0, 19, 37, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  animation: modalBackdropFadeIn 0.25s ease-out;
 }
 
 .modal-card {
   background: #ffffff;
-  border-radius: 4px;
+  border-radius: 8px;
   max-width: 480px;
   width: 100%;
   padding: 30px;
   position: relative;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 45px rgba(0, 19, 37, 0.35);
+  animation: modalScaleIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modal-close-btn {

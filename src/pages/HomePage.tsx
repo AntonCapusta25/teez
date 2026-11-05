@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, Calendar, Car, Navigation, Award, CheckCircle, ArrowRight } from 'lucide-react';
 import { submitTrialLesson } from '../lib/supabase';
 
@@ -22,6 +22,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       bg: '/images/car-angle.jpg',
     },
   ];
+
+  // Gentle 7s auto-advance with slide looping
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % slides.length);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
 
   // Proefles form state
   const [name, setName] = useState('');
@@ -59,10 +67,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           HERO SLIDER (.tiser) & FORM (.tiser__form)
           ========================================================================== */}
       <section className="tiser">
-        <div
-          className="tiser__slider-stage"
-          style={{ backgroundImage: `url('${slides[activeSlide].bg}')` }}
-        >
+        <div className="tiser__slider-stage">
+          {slides.map((s, idx) => (
+            <div
+              key={idx}
+              className={`tiser__slide-bg ${activeSlide === idx ? 'active' : ''}`}
+              style={{ backgroundImage: `url('${s.bg}')` }}
+            />
+          ))}
           <div className="tiser__overlay" />
           <div className="container tiser__content">
             <div className="tiser__body">
