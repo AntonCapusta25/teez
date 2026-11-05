@@ -27,7 +27,13 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
   font-family: var(--font-family);
   color: var(--color-text-main);
   background-color: #ffffff;
@@ -40,11 +46,22 @@ a {
   text-decoration: none;
 }
 
+button, a, [role="button"], input[type="submit"], input[type="button"], select {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
 button {
   font-family: inherit;
   cursor: pointer;
   border: none;
   outline: none;
+}
+
+input, textarea, select {
+  font-size: 16px; /* iOS Safari minimum to eliminate input zoom */
 }
 
 .container {
@@ -1909,79 +1926,117 @@ button {
 }
 
 @media (max-width: 768px) {
-  /* Header & Top Bar */
+  /* 1. Header & Top Bar Optimization */
   .bar-social {
-    padding: 6px 0;
+    padding: 4px 0;
   }
   .bar-social__inner {
-    flex-direction: column;
+    justify-content: center;
     text-align: center;
-    gap: 4px;
   }
   .bar-social__text {
-    font-size: 11.5px;
+    font-size: 11px;
+    letter-spacing: 0.2px;
   }
-  .header {
-    padding: 14px 0;
-  }
-  .header__inner {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
-  }
-  .logo__img {
-    max-height: 50px;
-    width: auto;
-  }
-  .header__contacts {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-  }
-  .header__contact-item {
-    font-size: 13px;
-  }
-  .header__callback {
-    height: 38px;
-    line-height: 38px;
-    padding: 0 18px;
-    font-size: 12px;
+  .bar-social__links {
+    display: none; /* Facebook link is in mobile drawer & footer */
   }
 
-  /* Mobile Navbar */
+  /* Hide bulky desktop header stack on mobile to save ~160px */
+  header .header {
+    display: none !important;
+  }
+
+  /* 2. Unified Native Mobile Navbar */
+  .nav {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    background-color: var(--color-navy) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+  }
   .nav__inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 15px;
-    flex-wrap: wrap;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 0 14px !important;
+    width: 100% !important;
+  }
+  .nav__mobile-bar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    height: 54px !important;
+  }
+  .nav__mobile-logo {
+    display: flex !important;
+    align-items: center !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+  }
+  .nav__mobile-logo-img {
+    height: 34px !important;
+    width: auto !important;
+    object-fit: contain !important;
+  }
+  .nav__mobile-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  .nav__mobile-call-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    background: var(--color-yellow) !important;
+    color: var(--color-navy) !important;
+    font-size: 11.5px !important;
+    font-weight: 800 !important;
+    padding: 7px 12px !important;
+    border-radius: 6px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.4px !important;
+    text-decoration: none !important;
+    box-shadow: 0 2px 8px rgba(255, 234, 0, 0.3) !important;
+  }
+  .nav__mobile-call-btn:active {
+    transform: scale(0.96) !important;
   }
   .nav__mobile-btn {
     display: flex !important;
-    align-items: center;
-    gap: 8px;
-    background: transparent;
-    color: #ffffff;
-    padding: 8px 0;
-    border: none;
-    cursor: pointer;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 6px !important;
+    padding: 0 !important;
+    border: none !important;
+    cursor: pointer !important;
+  }
+  .nav__mobile-btn:active {
+    background: rgba(255, 255, 255, 0.2) !important;
   }
   .nav__mobile-cta {
-    display: block !important;
+    display: none !important;
   }
-  .nav__mobile-cta .nav__proefles-btn {
-    padding: 7px 14px;
-    font-size: 11px;
-    font-weight: 800;
-  }
+
+  /* Mobile Navigation Drawer */
   .nav__list {
     display: none;
     flex-direction: column;
     width: 100%;
-    margin-top: 8px;
+    margin: 0;
+    padding: 8px 0 20px;
     background-color: var(--color-navy-dark);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    max-height: calc(100dvh - 64px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .nav__list.open {
     display: flex !important;
@@ -1992,75 +2047,285 @@ button {
   .nav__item button {
     width: 100%;
     text-align: left;
-    padding: 14px 16px;
+    padding: 13px 18px;
     font-size: 14px;
+    font-weight: 700;
+    color: #f1f5f9;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     border-left: 3px solid transparent;
+    min-height: 48px;
   }
   .nav__item button.active {
     border-left-color: var(--color-yellow);
     background-color: rgba(255, 234, 0, 0.1);
     color: var(--color-yellow);
   }
+  .nav__drawer-actions {
+    padding: 18px 18px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .nav__drawer-contacts {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    color: #cbd5e1;
+  }
+  .nav__drawer-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-yellow);
+    font-weight: 800;
+    font-size: 14.5px;
+  }
+  .nav__drawer-location {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #94a3b8;
+    font-size: 12px;
+  }
+  .nav__drawer-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .nav__drawer-proefles {
+    width: 100% !important;
+    height: 44px !important;
+    font-size: 13px !important;
+  }
+  .nav__drawer-callback {
+    width: 100% !important;
+    height: 44px !important;
+    font-size: 13px !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+  }
 
-  /* Hero Banner (.tiser) */
+  /* 3. Hero Banner (.tiser) — Uncropped, Mobile-Optimized */
   .tiser {
-    min-height: auto;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+  .tiser__slider-stage {
+    min-height: auto !important;
+    display: block !important;
+    padding: 0 0 24px 0 !important;
+    overflow: visible !important;
+  }
+  .tiser__slide-bg {
+    background-position: center 12% !important;
+  }
+  .tiser__overlay {
+    background: linear-gradient(180deg, rgba(0, 19, 37, 0.3) 0%, rgba(0, 19, 37, 0.72) 180px, rgba(0, 22, 43, 0.96) 320px, #00162b 100%) !important;
   }
   .tiser__content {
-    padding: 30px 15px 40px;
-    gap: 24px;
+    padding: 20px 14px 16px !important;
+    gap: 18px !important;
+    grid-template-columns: 1fr !important;
+  }
+  .tiser__body-inner {
+    max-width: 100% !important;
+  }
+  .tiser__location-text {
+    font-size: 12px !important;
+    letter-spacing: 1.2px !important;
+    margin-bottom: 6px !important;
+  }
+  .tiser__title-wrap {
+    margin-bottom: 10px !important;
   }
   .tiser__title {
+    font-size: clamp(23px, 6.5vw, 30px) !important;
+    line-height: 1.22 !important;
+  }
+  .tiser__desc {
+    font-size: 13.5px !important;
+    line-height: 1.55 !important;
+    color: #e2e8f0 !important;
+  }
+  .tiser__trust-row {
+    margin-top: 10px !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+  .tiser__trust-pill {
+    font-size: 11px !important;
+    padding: 4px 10px !important;
+    background: rgba(0, 26, 51, 0.75) !important;
+  }
+
+  /* Hero Form Card */
+  .tiser__form-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 6px !important;
+  }
+  .tiser__form {
+    padding: 20px 16px 22px !important;
+    border-radius: 14px !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35) !important;
+  }
+  .form__title {
+    font-size: 18px !important;
+    margin-bottom: 8px !important;
+    line-height: 1.25 !important;
+  }
+  .form__desc {
+    display: none !important; /* Hides bulky paragraph that caused severe mobile cropping */
+  }
+  .control-group {
+    margin-bottom: 10px !important;
+  }
+  .inp__control {
+    height: 48px !important;
+    font-size: 16px !important;
+    padding-left: 44px !important;
+  }
+  .control-remark {
+    width: 44px !important;
+    height: 48px !important;
+  }
+  .form__date-note {
+    margin-bottom: 12px !important;
+  }
+  .btn-form-submit {
+    height: 48px !important;
+    font-size: 15px !important;
+    width: 100% !important;
+  }
+
+  /* Docked Pager Tabs — 2-Column Grid on Mobile */
+  .tiser__pager {
+    margin-top: 0 !important;
+  }
+  .tiser__pager-list {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .tiser__pager-item {
+    height: 52px !important;
+    padding: 8px 12px !important;
+    gap: 8px !important;
+    border-top: none !important;
+    border-right: 1px solid #050d17 !important;
+    border-left: none !important;
+  }
+  .tiser__pager-icon {
+    width: 22px !important;
+    height: 22px !important;
+  }
+  .tiser__pager-name {
+    font-size: 11.5px !important;
+  }
+  .tiser__pager-desc {
+    font-size: 10px !important;
+  }
+
+  /* 4. Instructor Section (.home-intro) */
+  .home-intro {
+    padding: 45px 0 !important;
+    min-height: auto !important;
+  }
+  .home-intro__grid {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+  .home-intro__title {
     font-size: 24px !important;
     line-height: 1.3 !important;
   }
-  .tiser__desc {
+  .home-intro__text {
     font-size: 14px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 12px !important;
   }
-  .tiser__form-wrap {
-    width: 100%;
-    max-width: 100%;
+  .home-intro__specs {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    padding: 14px 16px !important;
+    margin-bottom: 22px !important;
   }
-  .tiser__find {
-    padding: 20px;
+  .home-intro__actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
   }
-  .tiser__pager-list {
-    flex-direction: column;
+  .home-intro__actions .btn {
+    width: 100% !important;
+    height: 48px !important;
+    justify-content: center !important;
   }
-  .tiser__pager {
-    margin-top: 0;
-  }
-  .tiser__pager-item {
-    height: auto;
-    padding: 14px 16px;
-    border-left: none;
-    border-top: 1px solid #050d17;
+  .home-intro__photo {
+    height: clamp(230px, 60vw, 310px) !important;
+    object-position: center 20% !important;
   }
 
-  /* Page Head Banner */
+  /* 5. Benefits Section (.best) */
+  .best {
+    padding: 48px 0 40px !important;
+  }
+  .best__list {
+    grid-template-columns: 1fr !important;
+    max-width: 100% !important;
+    gap: 16px !important;
+  }
+  .best__item {
+    padding: 24px 18px !important;
+  }
+
+  /* 6. Tarieven / Prices on Mobile */
+  .price-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    margin-bottom: 35px !important;
+  }
+  .price-card {
+    padding: 28px 20px 24px !important;
+  }
+  .price-card__btn {
+    width: 100% !important;
+    height: 48px !important;
+  }
+
+  /* 7. Subpage Head Banner */
   .head-page {
-    padding: 24px 0;
+    padding: 22px 0 !important;
   }
   .head-page__title {
-    font-size: 24px !important;
+    font-size: 22px !important;
   }
 
-  /* Form Grids & iOS Input Zoom Prevention */
+  /* 8. Forms & iOS Auto-zoom Prevention */
   .form-grid-2 {
     grid-template-columns: 1fr !important;
   }
   input, select, textarea {
-    font-size: 16px !important; /* Prevents iOS auto-zoom on input focus */
+    font-size: 16px !important;
   }
 
-  /* Floating Contact Button safe areas */
+  /* 9. Floating Contact Button Safe Areas & Mobile Size */
   .floating-contact-container {
-    bottom: calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
     right: calc(14px + env(safe-area-inset-right, 0px)) !important;
   }
+  .floating-trigger-btn {
+    padding: 10px 14px !important;
+    font-size: 12.5px !important;
+  }
+  .floating-contact-menu {
+    width: calc(100vw - 32px) !important;
+    max-width: 290px !important;
+  }
 
-  /* Admin Portal Responsive Cards */
+  /* 10. Admin Portal Mobile Cards */
   .admin-table-desktop {
     display: none !important;
   }
@@ -2070,6 +2335,12 @@ button {
 }
 
 @media (min-width: 769px) {
+  .nav__mobile-bar {
+    display: none !important;
+  }
+  .nav__drawer-actions {
+    display: none !important;
+  }
   .nav__mobile-cta {
     display: none !important;
   }
@@ -2078,19 +2349,30 @@ button {
   }
 }
 
-/* Extra small mobile adjustments */
+/* Extra small mobile adjustments (< 480px) */
 @media (max-width: 480px) {
   .container {
     padding: 0 12px;
   }
   .price-item {
-    padding: 24px 16px;
+    padding: 22px 14px;
   }
   .price-item__price {
-    font-size: 32px;
+    font-size: 30px;
   }
   .article__body {
     font-size: 14px;
+  }
+  /* On small screens, keep floating contact as clean circle to prevent overlapping forms */
+  .floating-btn-label {
+    display: none !important;
+  }
+  .floating-trigger-btn {
+    width: 48px !important;
+    height: 48px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    justify-content: center !important;
   }
 }
 

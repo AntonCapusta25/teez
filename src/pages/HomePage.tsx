@@ -149,6 +149,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                         className="inp__control"
                         type="text"
                         required
+                        autoComplete="name"
                         placeholder="Vul jouw naam in"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
@@ -162,6 +163,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                       <input
                         className="inp__control"
                         type="email"
+                        inputMode="email"
+                        autoComplete="email"
                         required
                         placeholder="Vul jouw e-mail in"
                         value={email}
@@ -176,6 +179,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                       <input
                         className="inp__control"
                         type="tel"
+                        inputMode="tel"
+                        autoComplete="tel"
                         required
                         placeholder="Vul jouw telefoonnummer in"
                         value={phone}
@@ -195,7 +200,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                         title="Geef bij datum de gewenste dag aan voor de proefles"
                       />
                     </div>
-                    <small style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '14px' }}>
+                    <small className="form__date-note" style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '14px' }}>
                       * Geef bij datum de gewenste dag aan voor de proefles
                     </small>
 
@@ -328,7 +333,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+              <div className="home-intro__actions" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   className="btn"

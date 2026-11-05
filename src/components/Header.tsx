@@ -96,17 +96,42 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Main Navbar (.nav) */}
       <nav className="nav">
         <div className="container nav__inner">
-          <button
-            type="button"
-            className="nav__mobile-btn"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle navigation"
-          >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-            <span style={{ fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
-              {mobileMenuOpen ? 'Sluit menu' : 'Menu'}
-            </span>
-          </button>
+          {/* Mobile Header Bar (Visible on mobile only) */}
+          <div className="nav__mobile-bar">
+            <button
+              type="button"
+              onClick={() => handleNavClick('home')}
+              className="nav__mobile-logo"
+              aria-label="Rijschool TEEZ Home"
+            >
+              <img
+                src="/images/logo.png"
+                alt="Rijschool TEEZ Logo"
+                className="nav__mobile-logo-img"
+              />
+            </button>
+
+            <div className="nav__mobile-actions">
+              <a
+                href="tel:0681819484"
+                className="nav__mobile-call-btn"
+                aria-label="Bel direct"
+                title="Bel 06 818 194 84"
+              >
+                <Phone size={17} />
+                <span>Bel direct</span>
+              </a>
+
+              <button
+                type="button"
+                className="nav__mobile-btn"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle navigation"
+              >
+                {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+            </div>
+          </div>
 
           <div className="nav__mobile-cta">
             <button
@@ -130,6 +155,37 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               </li>
             ))}
+
+            {/* Mobile Drawer Actions */}
+            <li className="nav__drawer-actions">
+              <div className="nav__drawer-contacts">
+                <a href="tel:0681819484" className="nav__drawer-phone">
+                  <Phone size={16} /> 06 818 194 84
+                </a>
+                <span className="nav__drawer-location">
+                  <MapPin size={15} /> Enschede, Hengelo & Twente
+                </span>
+              </div>
+              <div className="nav__drawer-btns">
+                <button
+                  type="button"
+                  className="btn nav__drawer-proefles"
+                  onClick={() => handleNavClick('aanmelden')}
+                >
+                  Gratis Proefles Aanvragen
+                </button>
+                <button
+                  type="button"
+                  className="btn btn--outline nav__drawer-callback"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenCallback();
+                  }}
+                >
+                  Bel mij terug
+                </button>
+              </div>
+            </li>
           </ul>
 
           <div className="nav__cta-desktop">
