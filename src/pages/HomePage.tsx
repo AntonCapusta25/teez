@@ -13,13 +13,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const slides = [
     {
       title: 'Autorijbewijs halen?',
-      text: 'Welkom op onze website! Rijschool TEEZ biedt jou de mogelijkheid om snel en voordelig jouw rijbewijs te halen.',
-      bg: '/images/hero-car.jpg',
+      text: 'Welkom op onze website! Rijschool TEEZ biedt jou de mogelijkheid om snel en voordelig jouw rijbewijs te halen in Enschede & Hengelo.',
+      bg: '/images/car-interior.jpg',
     },
     {
-      title: 'Wist je dat..',
-      text: '.. Jij bij ons zowel theorie- als praktijklessen kan nemen? Wij zorgen ervoor dat jij goed voorbereid jouw examens in gaat.',
-      bg: '/images/car-angle.jpg',
+      title: 'Moderne Hyundai i30',
+      text: 'Veilig en vertrouwd lessen in een moderne Hyundai i30 voorzien van dubbele bediening, airconditioning en achteruitrijcamera.',
+      bg: '/images/car-front.jpg',
     },
   ];
 
@@ -214,7 +214,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <Car size={32} className="tiser__pager-icon" />
                 <div style={{ textAlign: 'left' }}>
                   <div className="tiser__pager-name">Welkom</div>
-                  <div className="tiser__pager-desc">Rijschool TEEZ</div>
+                  <div className="tiser__pager-desc">Interieur & Dubbele Bediening</div>
                 </div>
               </button>
 
@@ -225,8 +225,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               >
                 <Navigation size={32} className="tiser__pager-icon" />
                 <div style={{ textAlign: 'left' }}>
-                  <div className="tiser__pager-name">Cursussen</div>
-                  <div className="tiser__pager-desc">Theorie en praktijk</div>
+                  <div className="tiser__pager-name">De Lesauto</div>
+                  <div className="tiser__pager-desc">Hyundai i30 & Cursussen</div>
                 </div>
               </button>
             </div>
@@ -287,32 +287,36 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         <div className="home-intro__container">
           <div className="home-intro__grid">
             <div>
-              <div className="home-intro__kicker">
+              <span className="home-intro__kicker">
                 Lokaal & Betrokken in Twente
-              </div>
+              </span>
               <h2 className="home-intro__title">
                 Rijschool TEEZ in Enschede & Hengelo
               </h2>
               <p className="home-intro__text">
-                Rijschool <strong>TEEZ</strong> is opgericht in 2018 en uitgegroeid tot een vertrouwde naam in het CBR-examengebied van Enschede en Hengelo. Jij krijgt altijd les van dezelfde vaste instructeur (Fawad), waardoor jij in alle rust en op je eigen tempo leert autorijden.
+                Bij Rijschool <strong>TEEZ</strong> stap je altijd in bij dezelfde vaste instructeur: <strong>Fawad</strong>. Vanaf jouw allereerste proefles tot aan het CBR-praktijkexamen heb je één vertrouwd aanspreekpunt dat jouw vorderingen nauwgezet volgt en jouw leertempo respecteert.
               </p>
               <p className="home-intro__text">
-                Cursisten worden door ons altijd netjes opgehaald en weer afgezet waar jij maar wilt: vanaf het station, de school, je werk of gewoon comfortabel aan de voordeur.
+                Geen steeds wisselende instructeurs of vreemde lesauto's, maar een ontspannen, geduldige en veilige lesomgeving. Cursisten worden altijd netjes opgehaald en weer afgezet: bij jouw voordeur, op school, het station of je werk in Enschede, Hengelo en omliggende plaatsen in Twente.
               </p>
 
-              {/* Highlight Bullets */}
-              <div className="home-intro__highlights">
-                <div className="home-intro__highlight-item">
-                  <CheckCircle size={18} color="#16a34a" /> Vaste instructeur Fawad
+              {/* Clean Editorial Specifications Grid (No tacky icons) */}
+              <div className="home-intro__specs">
+                <div className="home-intro__spec-item">
+                  <span className="home-intro__spec-label">Vaste Instructeur</span>
+                  <span className="home-intro__spec-value">Fawad</span>
                 </div>
-                <div className="home-intro__highlight-item">
-                  <CheckCircle size={18} color="#16a34a" /> Gratis intake- & proefles
+                <div className="home-intro__spec-item">
+                  <span className="home-intro__spec-label">CBR Rijschoolnummer</span>
+                  <span className="home-intro__spec-value">2098W1</span>
                 </div>
-                <div className="home-intro__highlight-item">
-                  <CheckCircle size={18} color="#16a34a" /> Ophalen waar jij wilt
+                <div className="home-intro__spec-item">
+                  <span className="home-intro__spec-label">Lesgebied</span>
+                  <span className="home-intro__spec-value">Enschede, Hengelo & Regio Twente</span>
                 </div>
-                <div className="home-intro__highlight-item">
-                  <CheckCircle size={18} color="#16a34a" /> Ook avonden & zaterdagen
+                <div className="home-intro__spec-item">
+                  <span className="home-intro__spec-label">Lestijden</span>
+                  <span className="home-intro__spec-value">Ma t/m Za (ook avonden)</span>
                 </div>
               </div>
 
@@ -329,30 +333,21 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   className="btn btn--outline"
                   onClick={() => onNavigate('aanmelden')}
                 >
-                  Direct Aanmelden
+                  Direct Proefles Aanvragen
                 </button>
               </div>
             </div>
 
-            {/* Framed Instructor Photo Card with Badge */}
+            {/* Prominent Square Instructor Photo Showcase with Editorial Caption */}
             <div className="home-intro__photo-card">
               <img
                 src="/images/instructor-car.jpg"
                 alt="Vaste instructeur Fawad en Hyundai i30 lesauto van Rijschool TEEZ"
                 className="home-intro__photo"
               />
-              <div className="home-intro__photo-badge">
-                <div className="home-intro__badge-icon">
-                  <Award size={22} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '13.5px', fontWeight: 800, color: '#ffea00' }}>
-                    Vaste instructeur Fawad
-                  </div>
-                  <div style={{ fontSize: '11.5px', color: '#cbd5e1' }}>
-                    CBR Rijschoolnummer: 2098W1
-                  </div>
-                </div>
+              <div className="home-intro__photo-caption">
+                <div className="home-intro__photo-name">Instructeur Fawad & Hyundai i30</div>
+                <div className="home-intro__photo-tag">CBR 2098W1</div>
               </div>
             </div>
           </div>
