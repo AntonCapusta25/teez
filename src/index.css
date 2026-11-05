@@ -592,9 +592,9 @@ button {
    ========================================================================== */
 .best {
   display: block;
-  padding: 105px 0 95px;
+  padding: 95px 0 85px;
   color: #ffffff;
-  background: radial-gradient(circle at 50% 15%, rgba(2, 35, 70, 0.8) 0%, rgba(0, 19, 37, 0.98) 100%), url('/images/pattern-blue.jpg') repeat;
+  background: #001a33 url('/images/pattern-blue.jpg') 0 0;
   position: relative;
 }
 
