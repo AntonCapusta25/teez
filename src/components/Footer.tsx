@@ -102,7 +102,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 <button
                   type="button"
                   onClick={() => handleNav('home')}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className="footer-logo-wrap"
+                  style={{ border: 'none', cursor: 'pointer' }}
+                  title="Rijschool TEEZ Home"
                 >
                   <img
                     src="/images/logo.png"
