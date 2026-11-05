@@ -14,12 +14,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
     {
       title: 'Autorijbewijs halen?',
       text: 'Welkom op onze website! Rijschool TEEZ biedt jou de mogelijkheid om snel en voordelig jouw rijbewijs te halen in Enschede & Hengelo.',
-      bg: '/images/car-interior.jpg',
+      bg: '/images/hero-car.jpg',
     },
     {
       title: 'Moderne Hyundai i30',
       text: 'Veilig en vertrouwd lessen in een moderne Hyundai i30 voorzien van dubbele bediening, airconditioning en achteruitrijcamera.',
-      bg: '/images/car-front.jpg',
+      bg: '/images/car-action.jpg',
     },
   ];
 
@@ -87,6 +87,17 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </div>
                 <div>
                   <p className="tiser__desc">{slides[activeSlide].text}</p>
+                </div>
+                <div className="tiser__trust-row">
+                  <span className="tiser__trust-pill">
+                    <CheckCircle size={14} color="#ffea00" /> CBR Rijschool 2098W1
+                  </span>
+                  <span className="tiser__trust-pill">
+                    <CheckCircle size={14} color="#ffea00" /> 100% Vaste Instructeur
+                  </span>
+                  <span className="tiser__trust-pill">
+                    <CheckCircle size={14} color="#ffea00" /> Ophalen in heel Twente
+                  </span>
                 </div>
               </div>
             </div>
@@ -214,7 +225,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <Car size={32} className="tiser__pager-icon" />
                 <div style={{ textAlign: 'left' }}>
                   <div className="tiser__pager-name">Welkom</div>
-                  <div className="tiser__pager-desc">Interieur & Dubbele Bediening</div>
+                  <div className="tiser__pager-desc">Rijschool TEEZ</div>
                 </div>
               </button>
 
