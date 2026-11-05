@@ -112,16 +112,6 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             <div className="nav__mobile-actions">
-              <a
-                href="tel:0681819484"
-                className="nav__mobile-call-btn"
-                aria-label="Bel direct"
-                title="Bel 06 818 194 84"
-              >
-                <Phone size={17} />
-                <span>Bel direct</span>
-              </a>
-
               <button
                 type="button"
                 className="nav__mobile-btn"

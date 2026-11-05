@@ -1926,35 +1926,24 @@ input, textarea, select {
 }
 
 @media (max-width: 768px) {
-  /* 1. Header & Top Bar Optimization */
+  /* 1. Remove Top Announcement Bar on Mobile */
   .bar-social {
-    padding: 4px 0;
-  }
-  .bar-social__inner {
-    justify-content: center;
-    text-align: center;
-  }
-  .bar-social__text {
-    font-size: 11px;
-    letter-spacing: 0.2px;
-  }
-  .bar-social__links {
-    display: none; /* Facebook link is in mobile drawer & footer */
+    display: none !important;
   }
 
-  /* Hide bulky desktop header stack on mobile to save ~160px */
+  /* 2. Hide Bulky Desktop Header on Mobile */
   header .header {
     display: none !important;
   }
 
-  /* 2. Unified Native Mobile Navbar */
+  /* 3. Sleek, Slim 50px Mobile Navbar */
   .nav {
     position: sticky !important;
     top: 0 !important;
     z-index: 1000 !important;
     padding-top: env(safe-area-inset-top, 0px) !important;
     background-color: var(--color-navy) !important;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35) !important;
   }
   .nav__inner {
     display: flex !important;
@@ -1967,7 +1956,7 @@ input, textarea, select {
     align-items: center !important;
     justify-content: space-between !important;
     width: 100% !important;
-    height: 54px !important;
+    height: 50px !important;
   }
   .nav__mobile-logo {
     display: flex !important;
@@ -1978,32 +1967,13 @@ input, textarea, select {
     cursor: pointer !important;
   }
   .nav__mobile-logo-img {
-    height: 34px !important;
+    height: 30px !important;
     width: auto !important;
     object-fit: contain !important;
   }
   .nav__mobile-actions {
     display: flex !important;
     align-items: center !important;
-    gap: 8px !important;
-  }
-  .nav__mobile-call-btn {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 5px !important;
-    background: var(--color-yellow) !important;
-    color: var(--color-navy) !important;
-    font-size: 11.5px !important;
-    font-weight: 800 !important;
-    padding: 7px 12px !important;
-    border-radius: 6px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.4px !important;
-    text-decoration: none !important;
-    box-shadow: 0 2px 8px rgba(255, 234, 0, 0.3) !important;
-  }
-  .nav__mobile-call-btn:active {
-    transform: scale(0.96) !important;
   }
   .nav__mobile-btn {
     display: flex !important;
@@ -2011,15 +1981,15 @@ input, textarea, select {
     justify-content: center !important;
     background: rgba(255, 255, 255, 0.1) !important;
     color: #ffffff !important;
-    width: 40px !important;
-    height: 40px !important;
+    width: 38px !important;
+    height: 38px !important;
     border-radius: 6px !important;
     padding: 0 !important;
     border: none !important;
     cursor: pointer !important;
   }
   .nav__mobile-btn:active {
-    background: rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255, 255, 255, 0.22) !important;
   }
   .nav__mobile-cta {
     display: none !important;
@@ -2031,10 +2001,10 @@ input, textarea, select {
     flex-direction: column;
     width: 100%;
     margin: 0;
-    padding: 8px 0 20px;
+    padding: 6px 0 20px;
     background-color: var(--color-navy-dark);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    max-height: calc(100dvh - 64px);
+    max-height: calc(100dvh - 58px);
     overflow-y: auto;
     overscroll-behavior: contain;
   }
@@ -2061,7 +2031,7 @@ input, textarea, select {
     color: var(--color-yellow);
   }
   .nav__drawer-actions {
-    padding: 18px 18px 8px;
+    padding: 16px 18px 8px;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -2107,7 +2077,7 @@ input, textarea, select {
     border-color: rgba(255, 255, 255, 0.3) !important;
   }
 
-  /* 3. Hero Banner (.tiser) — Uncropped, Mobile-Optimized */
+  /* 4. Ultra-clean Hero Banner (.tiser): ONLY Title + Form */
   .tiser {
     min-height: auto !important;
     overflow: visible !important;
@@ -2115,70 +2085,71 @@ input, textarea, select {
   .tiser__slider-stage {
     min-height: auto !important;
     display: block !important;
-    padding: 0 0 24px 0 !important;
+    padding: 14px 0 22px 0 !important;
     overflow: visible !important;
   }
   .tiser__slide-bg {
-    background-position: center 12% !important;
+    background-position: center 15% !important;
   }
   .tiser__overlay {
-    background: linear-gradient(180deg, rgba(0, 19, 37, 0.3) 0%, rgba(0, 19, 37, 0.72) 180px, rgba(0, 22, 43, 0.96) 320px, #00162b 100%) !important;
+    background: linear-gradient(180deg, rgba(0, 19, 37, 0.4) 0%, rgba(0, 19, 37, 0.8) 120px, #00162b 260px) !important;
   }
   .tiser__content {
-    padding: 20px 14px 16px !important;
-    gap: 18px !important;
+    padding: 6px 14px 12px !important;
+    gap: 12px !important;
     grid-template-columns: 1fr !important;
+  }
+  .tiser__body {
+    text-align: center !important;
   }
   .tiser__body-inner {
     max-width: 100% !important;
   }
+  /* Strip out all noisy crowding elements on mobile per user voice request */
   .tiser__location-text {
-    font-size: 12px !important;
-    letter-spacing: 1.2px !important;
-    margin-bottom: 6px !important;
-  }
-  .tiser__title-wrap {
-    margin-bottom: 10px !important;
-  }
-  .tiser__title {
-    font-size: clamp(23px, 6.5vw, 30px) !important;
-    line-height: 1.22 !important;
+    display: none !important;
   }
   .tiser__desc {
-    font-size: 13.5px !important;
-    line-height: 1.55 !important;
-    color: #e2e8f0 !important;
+    display: none !important;
   }
   .tiser__trust-row {
-    margin-top: 10px !important;
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 6px !important;
+    display: none !important;
   }
-  .tiser__trust-pill {
-    font-size: 11px !important;
-    padding: 4px 10px !important;
-    background: rgba(0, 26, 51, 0.75) !important;
+  .tiser__pager {
+    display: none !important;
+  }
+  .tiser__title-wrap {
+    margin-bottom: 0 !important;
+  }
+  .tiser__title {
+    font-size: clamp(21px, 6vw, 26px) !important;
+    line-height: 1.22 !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+    max-width: 92% !important;
+    letter-spacing: -0.3px !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75) !important;
   }
 
-  /* Hero Form Card */
+  /* Sleek, Beautiful Form Card */
   .tiser__form-wrap {
     width: 100% !important;
-    max-width: 100% !important;
-    margin-top: 6px !important;
+    max-width: 440px !important;
+    margin: 4px auto 0 !important;
   }
   .tiser__form {
-    padding: 20px 16px 22px !important;
+    padding: 18px 16px 20px !important;
     border-radius: 14px !important;
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35) !important;
   }
   .form__title {
-    font-size: 18px !important;
-    margin-bottom: 8px !important;
+    font-size: 17px !important;
+    margin-bottom: 12px !important;
+    text-align: center !important;
     line-height: 1.25 !important;
   }
   .form__desc {
-    display: none !important; /* Hides bulky paragraph that caused severe mobile cropping */
+    display: none !important;
   }
   .control-group {
     margin-bottom: 10px !important;
@@ -2194,6 +2165,7 @@ input, textarea, select {
   }
   .form__date-note {
     margin-bottom: 12px !important;
+    text-align: center !important;
   }
   .btn-form-submit {
     height: 48px !important;
@@ -2201,44 +2173,17 @@ input, textarea, select {
     width: 100% !important;
   }
 
-  /* Docked Pager Tabs — 2-Column Grid on Mobile */
-  .tiser__pager {
-    margin-top: 0 !important;
-  }
-  .tiser__pager-list {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-  }
-  .tiser__pager-item {
-    height: 52px !important;
-    padding: 8px 12px !important;
-    gap: 8px !important;
-    border-top: none !important;
-    border-right: 1px solid #050d17 !important;
-    border-left: none !important;
-  }
-  .tiser__pager-icon {
-    width: 22px !important;
-    height: 22px !important;
-  }
-  .tiser__pager-name {
-    font-size: 11.5px !important;
-  }
-  .tiser__pager-desc {
-    font-size: 10px !important;
-  }
-
-  /* 4. Instructor Section (.home-intro) */
+  /* 5. Instructor Section (.home-intro) */
   .home-intro {
-    padding: 45px 0 !important;
+    padding: 42px 0 !important;
     min-height: auto !important;
   }
   .home-intro__grid {
     grid-template-columns: 1fr !important;
-    gap: 28px !important;
+    gap: 24px !important;
   }
   .home-intro__title {
-    font-size: 24px !important;
+    font-size: 23px !important;
     line-height: 1.3 !important;
   }
   .home-intro__text {
@@ -2250,7 +2195,7 @@ input, textarea, select {
     grid-template-columns: 1fr !important;
     gap: 8px !important;
     padding: 14px 16px !important;
-    margin-bottom: 22px !important;
+    margin-bottom: 20px !important;
   }
   .home-intro__actions {
     display: flex !important;
@@ -2264,46 +2209,46 @@ input, textarea, select {
     justify-content: center !important;
   }
   .home-intro__photo {
-    height: clamp(230px, 60vw, 310px) !important;
+    height: clamp(220px, 58vw, 300px) !important;
     object-position: center 20% !important;
   }
 
-  /* 5. Benefits Section (.best) */
+  /* 6. Benefits Section (.best) */
   .best {
-    padding: 48px 0 40px !important;
+    padding: 44px 0 36px !important;
   }
   .best__list {
     grid-template-columns: 1fr !important;
     max-width: 100% !important;
-    gap: 16px !important;
+    gap: 14px !important;
   }
   .best__item {
-    padding: 24px 18px !important;
+    padding: 22px 18px !important;
   }
 
-  /* 6. Tarieven / Prices on Mobile */
+  /* 7. Tarieven / Prices on Mobile */
   .price-cards-grid {
     grid-template-columns: 1fr !important;
-    gap: 20px !important;
-    margin-bottom: 35px !important;
+    gap: 18px !important;
+    margin-bottom: 30px !important;
   }
   .price-card {
-    padding: 28px 20px 24px !important;
+    padding: 26px 18px 22px !important;
   }
   .price-card__btn {
     width: 100% !important;
     height: 48px !important;
   }
 
-  /* 7. Subpage Head Banner */
+  /* 8. Subpage Head Banner */
   .head-page {
-    padding: 22px 0 !important;
+    padding: 20px 0 !important;
   }
   .head-page__title {
     font-size: 22px !important;
   }
 
-  /* 8. Forms & iOS Auto-zoom Prevention */
+  /* 9. Forms & iOS Auto-zoom Prevention */
   .form-grid-2 {
     grid-template-columns: 1fr !important;
   }
@@ -2311,21 +2256,135 @@ input, textarea, select {
     font-size: 16px !important;
   }
 
-  /* 9. Floating Contact Button Safe Areas & Mobile Size */
+  /* 10. Simplified Mobile Footer */
+  .partners-section {
+    padding: 22px 0 18px !important;
+    background-color: #f8fafc !important;
+  }
+  .partners-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .partner-card {
+    padding: 12px 16px !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    text-align: left !important;
+  }
+  .partner-card__logo-wrap {
+    width: 72px !important;
+    margin-bottom: 0 !important;
+  }
+  .partner-card__logo {
+    max-height: 28px !important;
+  }
+  .partner-card__content {
+    flex-grow: 1 !important;
+  }
+  .partner-card__title {
+    font-size: 13px !important;
+    margin-bottom: 2px !important;
+  }
+  .partner-card__text {
+    display: none !important; /* Hides bulky essay paragraphs */
+  }
+  .partner-card__link {
+    font-size: 12px !important;
+    justify-content: flex-start !important;
+  }
+
+  /* Main Footer Streamlined */
+  .footer-main {
+    padding: 28px 0 calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 22px !important;
+    margin-bottom: 20px !important;
+  }
+  .footer-col {
+    text-align: center !important;
+    align-items: center !important;
+  }
+  .footer-title {
+    font-size: 12.5px !important;
+    margin-bottom: 10px !important;
+    letter-spacing: 0.8px !important;
+  }
+  .footer-text {
+    display: none !important; /* Streamlined for mobile */
+  }
+  .footer-logo {
+    margin-bottom: 10px !important;
+  }
+  .footer-social {
+    justify-content: center !important;
+    margin-bottom: 2px !important;
+  }
+  .footer-nav {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px 14px !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    text-align: left !important;
+  }
+  .footer-nav li button {
+    font-size: 13px !important;
+    padding: 4px 0 !important;
+  }
+  .footer-company-info {
+    text-align: center !important;
+  }
+  .footer-company-info p {
+    justify-content: center !important;
+    font-size: 13px !important;
+    margin-bottom: 5px !important;
+  }
+  .company-registration {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 4px 10px !important;
+    font-size: 11px !important;
+    margin-top: 8px !important;
+    padding-top: 8px !important;
+  }
+  .footer-bottom {
+    flex-direction: column !important;
+    gap: 10px !important;
+    text-align: center !important;
+    padding-top: 16px !important;
+  }
+  .scroll-top-btn {
+    margin-top: 4px !important;
+  }
+
+  /* 11. Floating Contact Button Safe Areas & Mobile Size */
   .floating-contact-container {
     bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
-    right: calc(14px + env(safe-area-inset-right, 0px)) !important;
+    right: 14px !important;
+  }
+  .floating-btn-label {
+    display: none !important;
   }
   .floating-trigger-btn {
-    padding: 10px 14px !important;
-    font-size: 12.5px !important;
+    width: 48px !important;
+    height: 48px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    justify-content: center !important;
   }
   .floating-contact-menu {
     width: calc(100vw - 32px) !important;
     max-width: 290px !important;
   }
 
-  /* 10. Admin Portal Mobile Cards */
+  /* 12. Admin Portal Mobile Cards */
   .admin-table-desktop {
     display: none !important;
   }
@@ -2355,24 +2414,13 @@ input, textarea, select {
     padding: 0 12px;
   }
   .price-item {
-    padding: 22px 14px;
+    padding: 20px 14px;
   }
   .price-item__price {
-    font-size: 30px;
+    font-size: 28px;
   }
   .article__body {
     font-size: 14px;
-  }
-  /* On small screens, keep floating contact as clean circle to prevent overlapping forms */
-  .floating-btn-label {
-    display: none !important;
-  }
-  .floating-trigger-btn {
-    width: 48px !important;
-    height: 48px !important;
-    padding: 0 !important;
-    border-radius: 50% !important;
-    justify-content: center !important;
   }
 }
 
