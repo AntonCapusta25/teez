@@ -1441,7 +1441,7 @@ button {
 }
 
 .footer-main {
-  background-color: var(--color-navy);
+  background: #001a33 url('/images/pattern-blue.jpg') 0 0;
   color: #ffffff;
   padding: 55px 0 25px;
 }
