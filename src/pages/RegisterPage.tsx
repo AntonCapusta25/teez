@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HeadPage } from '../components/HeadPage';
 import { CheckCircle, Send, PhoneCall } from 'lucide-react';
 import { submitRegistration } from '../lib/supabase';
+import { getPricingData, formatEuro } from '../lib/packageStore';
 
 interface RegisterPageProps {
   initialPackage?: string;
@@ -9,6 +10,7 @@ interface RegisterPageProps {
 }
 
 export const RegisterPage: React.FC<RegisterPageProps> = ({ initialPackage, onNavigate }) => {
+  const [pricing, setPricing] = useState(() => getPricingData());
   const [fullName, setFullName] = useState('');
   const [gender, setGender] = useState('Man');
   const [email, setEmail] = useState('');
@@ -23,6 +25,14 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ initialPackage, onNa
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setPricing(getPricingData());
+    };
+    window.addEventListener('teez_pricing_updated', handleUpdate);
+    return () => window.removeEventListener('teez_pricing_updated', handleUpdate);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,11 +233,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ initialPackage, onNa
 
                 <div className="form-group">
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
-                    {[
-                      { id: 'Pakket T', title: 'Pakket T', price: '€ 1.550', desc: '20 lessen + CBR praktijkexamen' },
-                      { id: 'Pakket EE', title: 'Pakket EE', price: '€ 2.050', desc: '30 lessen + TTT + praktijkexamen', popular: true },
-                      { id: 'Pakket Z', title: 'Pakket Z', price: '€ 2.470', desc: '38 lessen + TTT + praktijkexamen' },
-                    ].map((pkg) => (
+                    {pricing.packages.map((pkg) => (
                       <label
                         key={pkg.id}
                         style={{
@@ -267,11 +273,13 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ initialPackage, onNa
                           onChange={(e) => setPackageChoice(e.target.value)}
                           style={{ marginRight: '8px' }}
                         />
-                        <strong style={{ fontSize: '15px', color: '#001a33' }}>{pkg.title}</strong>
+                        <strong style={{ fontSize: '15px', color: '#001a33' }}>{pkg.id}</strong>
                         <div style={{ fontSize: '16px', color: '#001a33', fontWeight: 800, margin: '4px 0 2px' }}>
-                          {pkg.price}
+                          € {formatEuro(pkg.price)}
                         </div>
-                        <small style={{ color: '#64748b', fontSize: '12px' }}>{pkg.desc}</small>
+                        <small style={{ color: '#64748b', fontSize: '12px' }}>
+                          {pkg.desc || `${pkg.lessons} rijlessen + examens`}
+                        </small>
                       </label>
                     ))}
                   </div>

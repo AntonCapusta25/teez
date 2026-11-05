@@ -18,13 +18,27 @@ import {
   Send,
   MessageSquare,
   Clock,
-  Sparkles
+  Sparkles,
+  Tag,
+  Plus,
+  RotateCcw,
+  Save,
 } from 'lucide-react';
 import type {
   Lead,
   LeadStatus,
   AdminSettings,
 } from '../lib/adminStore';
+import type {
+  PackagePlan,
+  SingleRates,
+  PricingData,
+} from '../lib/packageStore';
+import {
+  getPricingData,
+  savePricingData,
+  resetPricingToDefaults,
+} from '../lib/packageStore';
 import {
   getAllLeads,
   updateLeadStatus,
@@ -53,7 +67,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
 
   // Data & View State
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [activeTab, setActiveTab] = useState<'leads' | 'settings' | 'dation'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'settings' | 'dation' | 'pricing'>('leads');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,6 +79,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
   const [settings, setSettings] = useState<AdminSettings>(getAdminSettings());
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [testEmailStatus, setTestEmailStatus] = useState<string | null>(null);
+
+  // Pricing & Package State
+  const [pricingData, setPricingData] = useState<PricingData>(() => getPricingData());
+  const [pricingSaved, setPricingSaved] = useState(false);
 
   // Load leads from store & Supabase
   const refreshData = async () => {
@@ -137,6 +155,94 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
     saveAdminSettings(settings);
     setSettingsSaved(true);
     setTimeout(() => setSettingsSaved(false), 3000);
+  };
+
+  // Pricing Handlers
+  const handleSavePricing = (e: React.FormEvent) => {
+    e.preventDefault();
+    savePricingData(pricingData);
+    setPricingSaved(true);
+    setTimeout(() => setPricingSaved(false), 3500);
+  };
+
+  const handleResetPricing = () => {
+    if (window.confirm('Weet je zeker dat je alle pakketten en losse tarieven wilt herstellen naar de oorspronkelijke standaardwaarden?')) {
+      const defaults = resetPricingToDefaults();
+      setPricingData(defaults);
+      setPricingSaved(true);
+      setTimeout(() => setPricingSaved(false), 3500);
+    }
+  };
+
+  const handleAddPackage = () => {
+    const nextNum = pricingData.packages.length + 1;
+    const newPkg: PackagePlan = {
+      id: `Pakket ${nextNum}`,
+      name: `PAKKET ${nextNum}`,
+      tag: 'Nieuw',
+      price: 1800,
+      lessons: 25,
+      popular: false,
+      desc: '25 lessen + CBR praktijkexamen',
+      features: [
+        '25 Rijlessen (60 min)',
+        'Theoriemateriaal',
+        'Tussentijdse toets (TTT)',
+        'CBR Praktijkexamen',
+        'Gratis intakeles',
+      ],
+    };
+    setPricingData(prev => ({
+      ...prev,
+      packages: [...prev.packages, newPkg],
+    }));
+  };
+
+  const handleDeletePackage = (index: number) => {
+    if (pricingData.packages.length <= 1) {
+      alert('Er moet minimaal 1 lespakket actief blijven.');
+      return;
+    }
+    const targetName = pricingData.packages[index].name;
+    if (window.confirm(`Weet je zeker dat je het pakket "${targetName}" wilt verwijderen?`)) {
+      setPricingData(prev => ({
+        ...prev,
+        packages: prev.packages.filter((_, i) => i !== index),
+      }));
+    }
+  };
+
+  const handlePackageFieldChange = <K extends keyof PackagePlan>(
+    index: number,
+    field: K,
+    value: PackagePlan[K]
+  ) => {
+    setPricingData(prev => {
+      const updated = [...prev.packages];
+      updated[index] = {
+        ...updated[index],
+        [field]: value,
+      };
+      if (field === 'name') {
+        updated[index].id = String(value);
+      }
+      return { ...prev, packages: updated };
+    });
+  };
+
+  const handlePackageFeaturesChange = (index: number, rawText: string) => {
+    const lines = rawText.split('\n');
+    handlePackageFieldChange(index, 'features', lines);
+  };
+
+  const handleSingleRateChange = (field: keyof SingleRates, value: number) => {
+    setPricingData(prev => ({
+      ...prev,
+      singleRates: {
+        ...prev.singleRates,
+        [field]: value,
+      },
+    }));
   };
 
   // Test Email Webhook
@@ -430,6 +536,26 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
             }}
           >
             <Sparkles size={18} /> Dation Koppeling Info
+          </button>
+
+          <button
+            onClick={() => setActiveTab('pricing')}
+            style={{
+              padding: '10px 18px',
+              fontWeight: 700,
+              fontSize: '0.95rem',
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              color: activeTab === 'pricing' ? '#001a33' : '#64748b',
+              borderBottom: activeTab === 'pricing' ? '3px solid #ffea00' : '3px solid transparent',
+              marginBottom: '-2px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <Tag size={18} /> Tarieven & Pakketten
           </button>
 
           <button
@@ -1056,6 +1182,315 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
               <button type="submit" className="btn">
                 Instellingen Opslaan
               </button>
+            </form>
+          </div>
+        )}
+
+        {/* TAB 4: PRICING & PLAN MANAGEMENT */}
+        {activeTab === 'pricing' && (
+          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '30px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+            
+            {/* Header & Controls */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid #f1f5f9' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '48px', height: '48px', background: '#fef3c7', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b45309' }}>
+                  <Tag size={24} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#001a33' }}>
+                    Tarieven & Lespakketten Beheer
+                  </h3>
+                  <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '2px' }}>
+                    Pas de prijzen, pakketnamen, aantal lessen en losse tarieven aan. Wijzigingen worden direct doorgevoerd op de website en in het aanmeldformulier.
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={handleAddPackage}
+                  className="btn btn--outline"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.88rem' }}
+                >
+                  <Plus size={16} /> Nieuw Pakket
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetPricing}
+                  style={{ background: '#f8fafc', border: '1px solid #cbd5e1', color: '#475569', padding: '8px 14px', borderRadius: '6px', fontSize: '0.85rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}
+                  title="Zet alle prijzen terug naar de originele fabriekswaarden"
+                >
+                  <RotateCcw size={14} /> Herstel Standaardwaarden
+                </button>
+              </div>
+            </div>
+
+            {/* Notification Toast */}
+            {pricingSaved && (
+              <div style={{ background: '#dcfce7', color: '#15803d', border: '1px solid #bbf7d0', padding: '14px 18px', borderRadius: '8px', marginBottom: '24px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Check size={18} /> ✅ Tarieven en pakketten succesvol opgeslagen! De website is direct live bijgewerkt.
+              </div>
+            )}
+
+            <form onSubmit={handleSavePricing}>
+              {/* SECTION 1: PACKAGES */}
+              <div style={{ marginBottom: '36px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                  <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#001a33' }}>
+                    Lespakketten ({pricingData.packages.length})
+                  </h4>
+                  <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                    Tip: vink &quot;Meest gekozen&quot; aan om een pakket uit te lichten met het gouden label
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+                  {pricingData.packages.map((pkg, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        background: pkg.popular ? '#fefce8' : '#fff',
+                        border: pkg.popular ? '2px solid #ffea00' : '1px solid #e2e8f0',
+                        borderRadius: '12px',
+                        padding: '20px',
+                        position: 'relative',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      {/* Card Header & Controls */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid #f1f5f9' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ background: '#001a33', color: '#ffea00', padding: '3px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 800 }}>
+                            #{idx + 1}
+                          </span>
+                          <span style={{ fontWeight: 800, color: '#001a33', fontSize: '1rem' }}>
+                            {pkg.name || `Pakket ${idx + 1}`}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleDeletePackage(idx)}
+                            title="Verwijder dit pakket"
+                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Popular Toggle */}
+                      <div style={{ marginBottom: '16px', background: 'rgba(255,255,255,0.7)', padding: '8px 12px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700, color: '#001a33', cursor: 'pointer' }}>
+                          <input
+                            type="checkbox"
+                            checked={!!pkg.popular}
+                            onChange={(e) => handlePackageFieldChange(idx, 'popular', e.target.checked)}
+                          />
+                          ★ Meest gekozen pakket (Gouden badge op website)
+                        </label>
+                      </div>
+
+                      {/* Package Name & Tag */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                        <div className="form-group" style={{ marginBottom: 0 }}>
+                          <label className="form-label" style={{ fontSize: '0.8rem' }}>Pakketnaam *</label>
+                          <input
+                            type="text"
+                            required
+                            className="form-input"
+                            value={pkg.name}
+                            onChange={(e) => handlePackageFieldChange(idx, 'name', e.target.value)}
+                            placeholder="bijv. PAKKET T"
+                          />
+                        </div>
+                        <div className="form-group" style={{ marginBottom: 0 }}>
+                          <label className="form-label" style={{ fontSize: '0.8rem' }}>Tag / Label</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={pkg.tag}
+                            onChange={(e) => handlePackageFieldChange(idx, 'tag', e.target.value)}
+                            placeholder="bijv. Instap / Aanrader"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Price & Lesson Count */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                        <div className="form-group" style={{ marginBottom: 0 }}>
+                          <label className="form-label" style={{ fontSize: '0.8rem' }}>Prijs (€) *</label>
+                          <input
+                            type="number"
+                            required
+                            min="0"
+                            step="1"
+                            className="form-input"
+                            value={pkg.price}
+                            onChange={(e) => handlePackageFieldChange(idx, 'price', parseFloat(e.target.value) || 0)}
+                          />
+                        </div>
+                        <div className="form-group" style={{ marginBottom: 0 }}>
+                          <label className="form-label" style={{ fontSize: '0.8rem' }}>Aantal Rijlessen</label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            className="form-input"
+                            value={pkg.lessons}
+                            onChange={(e) => handlePackageFieldChange(idx, 'lessons', parseInt(e.target.value, 10) || 0)}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Short Description */}
+                      <div className="form-group" style={{ marginBottom: '12px' }}>
+                        <label className="form-label" style={{ fontSize: '0.8rem' }}>Korte Samenvatting</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={pkg.desc || ''}
+                          onChange={(e) => handlePackageFieldChange(idx, 'desc', e.target.value)}
+                          placeholder="bijv. 20 lessen + CBR praktijkexamen"
+                        />
+                      </div>
+
+                      {/* Included Features List */}
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label" style={{ fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Inbegrepen Onderdelen</span>
+                          <span style={{ color: '#94a3b8', fontWeight: 400 }}>1 regel per onderdeel</span>
+                        </label>
+                        <textarea
+                          rows={5}
+                          className="form-input"
+                          style={{ fontFamily: 'inherit', fontSize: '0.85rem', lineHeight: 1.6 }}
+                          value={pkg.features.join('\n')}
+                          onChange={(e) => handlePackageFeaturesChange(idx, e.target.value)}
+                          placeholder="20 Rijlessen (60 min)&#10;Theoriemateriaal&#10;CBR Praktijkexamen"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* SECTION 2: SINGLE RATES & EXAMS */}
+              <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '30px' }}>
+                <div style={{ marginBottom: '16px' }}>
+                  <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#001a33' }}>
+                    Losse Rijlessen, Toetsen & Examens
+                  </h4>
+                  <p style={{ color: '#64748b', fontSize: '0.85rem', marginTop: '2px' }}>
+                    Deze tarieven worden getoond in het overzicht onderaan de tarievenpagina.
+                  </p>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '0.85rem' }}>Losse Rijles (60 min)</label>
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 600 }}>€</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        className="form-input"
+                        style={{ paddingLeft: '28px' }}
+                        value={pricingData.singleRates.hourlyRate}
+                        onChange={(e) => handleSingleRateChange('hourlyRate', parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '0.85rem' }}>Losse Rijles (90 min)</label>
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 600 }}>€</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        className="form-input"
+                        style={{ paddingLeft: '28px' }}
+                        value={pricingData.singleRates.rate90Min}
+                        onChange={(e) => handleSingleRateChange('rate90Min', parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '0.85rem' }}>CBR Praktijkexamen B</label>
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 600 }}>€</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        className="form-input"
+                        style={{ paddingLeft: '28px' }}
+                        value={pricingData.singleRates.cbrExam}
+                        onChange={(e) => handleSingleRateChange('cbrExam', parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '0.85rem' }}>Tussentijdse Toets (TTT)</label>
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 600 }}>€</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        className="form-input"
+                        style={{ paddingLeft: '28px' }}
+                        value={pricingData.singleRates.tttExam}
+                        onChange={(e) => handleSingleRateChange('tttExam', parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: '0.85rem' }}>Theoriecursus</label>
+                    <div style={{ position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 600 }}>€</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        className="form-input"
+                        style={{ paddingLeft: '28px' }}
+                        value={pricingData.singleRates.theoryCourse || 0}
+                        onChange={(e) => handleSingleRateChange('theoryCourse', parseFloat(e.target.value) || 0)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Actions */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px', paddingTop: '16px', borderTop: '1px solid #e2e8f0' }}>
+                <button
+                  type="submit"
+                  className="btn"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 24px', fontSize: '1rem' }}
+                >
+                  <Save size={18} /> Wijzigingen Opslaan
+                </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <a
+                    href="#tarieven"
+                    style={{ fontSize: '0.88rem', color: '#2563eb', textDecoration: 'none', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    Bekijk live op website <ExternalLink size={14} />
+                  </a>
+                </div>
+              </div>
             </form>
           </div>
         )}

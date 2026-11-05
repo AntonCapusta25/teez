@@ -1,12 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { HeadPage } from '../components/HeadPage';
 import { Check } from 'lucide-react';
+import { getPricingData, formatEuro } from '../lib/packageStore';
 
 interface PricesPageProps {
   onNavigate: (page: string, packageChoice?: string) => void;
 }
 
 export const PricesPage: React.FC<PricesPageProps> = ({ onNavigate }) => {
+  const [pricing, setPricing] = useState(() => getPricingData());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setPricing(getPricingData());
+    };
+    window.addEventListener('teez_pricing_updated', handleUpdate);
+    return () => window.removeEventListener('teez_pricing_updated', handleUpdate);
+  }, []);
+
   return (
     <div>
       {/* Authentic Head Page Banner (.head-page) */}
@@ -24,110 +35,74 @@ export const PricesPage: React.FC<PricesPageProps> = ({ onNavigate }) => {
             </p>
           </div>
 
-          {/* Clean Modernized Price Table */}
+          {/* Dynamic Price Table */}
           <div className="price-cards-grid">
-            {/* PAKKET T */}
-            <div className="price-card">
-              <div className="price-card__header">
-                <span className="price-card__tag">Instap</span>
-                <h3 className="price-card__title">PAKKET T</h3>
-                <div className="price-card__amount">
-                  <span className="price-currency">€</span>
-                  <span className="price-value">1.550</span>
-                </div>
-              </div>
-
-              <ul className="price-card__features">
-                <li><Check size={16} className="feature-check" /> 20 Rijlessen (60 min)</li>
-                <li><Check size={16} className="feature-check" /> Theoriemateriaal</li>
-                <li><Check size={16} className="feature-check" /> Tussentijdse toets (TTT)</li>
-                <li><Check size={16} className="feature-check" /> CBR Praktijkexamen</li>
-                <li><Check size={16} className="feature-check" /> Gratis intakeles</li>
-              </ul>
-
-              <button
-                type="button"
-                className="btn price-card__btn"
-                onClick={() => onNavigate('aanmelden', 'Pakket T')}
+            {pricing.packages.map((pkg) => (
+              <div
+                key={pkg.id}
+                className={`price-card ${pkg.popular ? 'price-card--featured' : ''}`}
               >
-                Bestel Pakket T
-              </button>
-            </div>
-
-            {/* PAKKET EE (MEEST GEKOZEN) */}
-            <div className="price-card price-card--featured">
-              <div className="price-card__badge">
-                ★ Meest gekozen ★
-              </div>
-              <div className="price-card__header">
-                <span className="price-card__tag price-card__tag--gold">Aanrader</span>
-                <h3 className="price-card__title">PAKKET EE</h3>
-                <div className="price-card__amount">
-                  <span className="price-currency">€</span>
-                  <span className="price-value">2.050</span>
+                {pkg.popular && (
+                  <div className="price-card__badge">
+                    ★ Meest gekozen ★
+                  </div>
+                )}
+                <div className="price-card__header">
+                  <span className={`price-card__tag ${pkg.popular ? 'price-card__tag--gold' : ''}`}>
+                    {pkg.tag}
+                  </span>
+                  <h3 className="price-card__title">{pkg.name}</h3>
+                  <div className="price-card__amount">
+                    <span className="price-currency">€</span>
+                    <span className="price-value">{formatEuro(pkg.price)}</span>
+                  </div>
                 </div>
+
+                <ul className="price-card__features">
+                  {pkg.features.map((feature, idx) => (
+                    <li key={idx}>
+                      <Check
+                        size={16}
+                        className={`feature-check ${pkg.popular ? 'feature-check--gold' : ''}`}
+                      />{' '}
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  type="button"
+                  className={`btn price-card__btn ${pkg.popular ? 'price-card__btn--featured' : ''}`}
+                  onClick={() => onNavigate('aanmelden', pkg.id)}
+                >
+                  Bestel {pkg.id}
+                </button>
               </div>
-
-              <ul className="price-card__features">
-                <li><Check size={16} className="feature-check feature-check--gold" /> <strong>30 Rijlessen</strong> (60 min)</li>
-                <li><Check size={16} className="feature-check feature-check--gold" /> Theoriemateriaal</li>
-                <li><Check size={16} className="feature-check feature-check--gold" /> Tussentijdse toets (TTT)</li>
-                <li><Check size={16} className="feature-check feature-check--gold" /> CBR Praktijkexamen</li>
-                <li><Check size={16} className="feature-check feature-check--gold" /> Gratis intakeles</li>
-              </ul>
-
-              <button
-                type="button"
-                className="btn price-card__btn price-card__btn--featured"
-                onClick={() => onNavigate('aanmelden', 'Pakket EE')}
-              >
-                Bestel Pakket EE
-              </button>
-            </div>
-
-            {/* PAKKET Z */}
-            <div className="price-card">
-              <div className="price-card__header">
-                <span className="price-card__tag">Compleet</span>
-                <h3 className="price-card__title">PAKKET Z</h3>
-                <div className="price-card__amount">
-                  <span className="price-currency">€</span>
-                  <span className="price-value">2.470</span>
-                </div>
-              </div>
-
-              <ul className="price-card__features">
-                <li><Check size={16} className="feature-check" /> <strong>38 Rijlessen</strong> (60 min)</li>
-                <li><Check size={16} className="feature-check" /> Theoriemateriaal</li>
-                <li><Check size={16} className="feature-check" /> Tussentijdse toets (TTT)</li>
-                <li><Check size={16} className="feature-check" /> CBR Praktijkexamen</li>
-                <li><Check size={16} className="feature-check" /> Gratis intakeles</li>
-              </ul>
-
-              <button
-                type="button"
-                className="btn price-card__btn"
-                onClick={() => onNavigate('aanmelden', 'Pakket Z')}
-              >
-                Bestel Pakket Z
-              </button>
-            </div>
+            ))}
           </div>
 
           {/* Clean Extra Courses / Losse Rijlessen Block */}
           <div className="extra-rates-card">
-            <h3 className="extra-rates-title">Losse Rijlessen & Opfriscursus</h3>
+            <h3 className="extra-rates-title">Losse Rijlessen & Examens</h3>
             <p className="extra-rates-desc">
-              Prijzen voor losse rijlessen, theorie en opfriscursussen
+              Prijzen voor losse rijlessen, toetsen en praktijkexamens
             </p>
             <div className="extra-rates-grid">
               <div className="extra-rate-item">
                 <span className="rate-name">Losse Rijles (60 min)</span>
-                <span className="rate-price">€ 55,00</span>
+                <span className="rate-price">€ {formatEuro(pricing.singleRates.hourlyRate)},-</span>
               </div>
               <div className="extra-rate-item">
-                <span className="rate-name">Opfriscursus (4x 90 min)</span>
-                <span className="rate-price">€ 300,00</span>
+                <span className="rate-name">Losse Rijles (90 min)</span>
+                <span className="rate-price">€ {formatEuro(pricing.singleRates.rate90Min)}</span>
+              </div>
+              <div className="extra-rate-item">
+                <span className="rate-name">CBR Praktijkexamen B</span>
+                <span className="rate-price">€ {formatEuro(pricing.singleRates.cbrExam)},-</span>
+              </div>
+              <div className="extra-rate-item">
+                <span className="rate-name">Tussentijdse Toets (TTT)</span>
+                <span className="rate-price">€ {formatEuro(pricing.singleRates.tttExam)},-</span>
               </div>
             </div>
           </div>
