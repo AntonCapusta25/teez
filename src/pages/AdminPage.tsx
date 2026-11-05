@@ -523,7 +523,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
               </div>
             </div>
 
-            {/* Leads Table */}
+            {/* Leads Table & Cards Container */}
             {filteredLeads.length === 0 ? (
               <div style={{ padding: '48px 20px', textAlign: 'center', color: '#64748b' }}>
                 <Users size={40} color="#cbd5e1" style={{ margin: '0 auto 12px' }} />
@@ -531,186 +531,323 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                 <p style={{ fontSize: '0.85rem', marginTop: '4px' }}>Pas je zoekopdracht of filter aan, of dien een formulier in via de website.</p>
               </div>
             ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
-                  <thead>
-                    <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      <th style={{ padding: '12px 16px' }}>Status</th>
-                      <th style={{ padding: '12px 16px' }}>Kandidaat</th>
-                      <th style={{ padding: '12px 16px' }}>Type & Details</th>
-                      <th style={{ padding: '12px 16px' }}>Contact</th>
-                      <th style={{ padding: '12px 16px' }}>Datum</th>
-                      <th style={{ padding: '12px 16px', textAlign: 'right' }}>Snelle Acties</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredLeads.map((lead) => {
-                      const statusColors: Record<LeadStatus, { bg: string; text: string }> = {
-                        nieuw: { bg: '#fef3c7', text: '#b45309' },
-                        in_behandeling: { bg: '#e0f2fe', text: '#0369a1' },
-                        ingepland: { bg: '#f3e8ff', text: '#7e22ce' },
-                        ingeschreven: { bg: '#dcfce7', text: '#15803d' },
-                        gearchiveerd: { bg: '#f1f5f9', text: '#64748b' },
-                      };
+              <div>
+                {/* Desktop Table View */}
+                <div className="admin-table-desktop" style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        <th style={{ padding: '12px 16px' }}>Status</th>
+                        <th style={{ padding: '12px 16px' }}>Kandidaat</th>
+                        <th style={{ padding: '12px 16px' }}>Type & Details</th>
+                        <th style={{ padding: '12px 16px' }}>Contact</th>
+                        <th style={{ padding: '12px 16px' }}>Datum</th>
+                        <th style={{ padding: '12px 16px', textAlign: 'right' }}>Snelle Acties</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredLeads.map((lead) => {
+                        const statusColors: Record<LeadStatus, { bg: string; text: string }> = {
+                          nieuw: { bg: '#fef3c7', text: '#b45309' },
+                          in_behandeling: { bg: '#e0f2fe', text: '#0369a1' },
+                          ingepland: { bg: '#f3e8ff', text: '#7e22ce' },
+                          ingeschreven: { bg: '#dcfce7', text: '#15803d' },
+                          gearchiveerd: { bg: '#f1f5f9', text: '#64748b' },
+                        };
 
-                      const typeLabels: Record<string, string> = {
-                        registration: 'Aanmelding',
-                        trial_lesson: 'Proefles',
-                        callback: 'Terugbelverzoek',
-                        contact: 'Bericht',
-                      };
+                        const typeLabels: Record<string, string> = {
+                          registration: 'Aanmelding',
+                          trial_lesson: 'Proefles',
+                          callback: 'Terugbelverzoek',
+                          contact: 'Bericht',
+                        };
 
-                      const currentStatusColor = statusColors[lead.status] || statusColors.nieuw;
+                        const currentStatusColor = statusColors[lead.status] || statusColors.nieuw;
 
-                      return (
-                        <tr key={lead.id} style={{ borderBottom: '1px solid #f1f5f9', verticalAlign: 'top' }}>
-                          {/* Status */}
-                          <td style={{ padding: '14px 16px' }}>
-                            <select
-                              value={lead.status}
-                              onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
-                              style={{
-                                background: currentStatusColor.bg,
-                                color: currentStatusColor.text,
-                                border: 'none',
-                                padding: '4px 8px',
-                                borderRadius: '4px',
-                                fontWeight: 700,
-                                fontSize: '0.78rem',
-                                cursor: 'pointer',
-                              }}
-                            >
-                              <option value="nieuw">Nieuw</option>
-                              <option value="in_behandeling">In behandeling</option>
-                              <option value="ingepland">Ingepland</option>
-                              <option value="ingeschreven">Ingeschreven</option>
-                              <option value="gearchiveerd">Gearchiveerd</option>
-                            </select>
-                          </td>
+                        return (
+                          <tr key={lead.id} style={{ borderBottom: '1px solid #f1f5f9', verticalAlign: 'top' }}>
+                            {/* Status */}
+                            <td style={{ padding: '14px 16px' }}>
+                              <select
+                                value={lead.status}
+                                onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
+                                style={{
+                                  background: currentStatusColor.bg,
+                                  color: currentStatusColor.text,
+                                  border: 'none',
+                                  padding: '4px 8px',
+                                  borderRadius: '4px',
+                                  fontWeight: 700,
+                                  fontSize: '0.78rem',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                <option value="nieuw">Nieuw</option>
+                                <option value="in_behandeling">In behandeling</option>
+                                <option value="ingepland">Ingepland</option>
+                                <option value="ingeschreven">Ingeschreven</option>
+                                <option value="gearchiveerd">Gearchiveerd</option>
+                              </select>
+                            </td>
 
-                          {/* Candidate info */}
-                          <td style={{ padding: '14px 16px' }}>
-                            <div style={{ fontWeight: 800, color: '#001a33', fontSize: '0.95rem' }}>{lead.name}</div>
-                            {lead.gender && (
-                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                                {lead.gender} • Geb. {lead.birthDate || 'onbekend'} {lead.birthPlace ? `(${lead.birthPlace})` : ''}
-                              </div>
-                            )}
-                            {lead.address && (
-                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                                📍 {lead.address}, {lead.postalCity}
-                              </div>
-                            )}
-                          </td>
-
-                          {/* Type & Details */}
-                          <td style={{ padding: '14px 16px' }}>
-                            <span style={{ display: 'inline-block', background: '#f1f5f9', color: '#334155', padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px' }}>
-                              {typeLabels[lead.type] || lead.type}
-                            </span>
-                            {lead.packageChoice && (
-                              <div style={{ fontWeight: 600, color: '#0284c7', fontSize: '0.85rem' }}>
-                                🏷️ {lead.packageChoice}
-                              </div>
-                            )}
-                            {lead.preferredDate && (
-                              <div style={{ color: '#475569', fontSize: '0.8rem', marginTop: '2px' }}>
-                                🗓️ {lead.preferredDate}
-                              </div>
-                            )}
-                            {lead.message && (
-                              <div style={{ fontSize: '0.78rem', color: '#64748b', fontStyle: 'italic', marginTop: '4px', maxWidth: '320px' }}>
-                                "{lead.message}"
-                              </div>
-                            )}
-
-                            {/* Internal Notes */}
-                            <div style={{ marginTop: '6px' }}>
-                              {editingNotesId === lead.id ? (
-                                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                  <input
-                                    type="text"
-                                    value={tempNotes}
-                                    onChange={(e) => setTempNotes(e.target.value)}
-                                    placeholder="Notitie toevoegen..."
-                                    style={{ fontSize: '0.78rem', padding: '2px 6px', border: '1px solid #cbd5e1', borderRadius: '4px' }}
-                                  />
-                                  <button onClick={() => handleSaveNotes(lead.id)} style={{ fontSize: '0.75rem', padding: '2px 8px', background: '#001a33', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Opslaan</button>
-                                  <button onClick={() => setEditingNotesId(null)} style={{ fontSize: '0.75rem', padding: '2px 6px', background: 'none', border: 'none', cursor: 'pointer' }}>Annuleer</button>
-                                </div>
-                              ) : (
-                                <div style={{ fontSize: '0.78rem', color: '#059669', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }} onClick={() => { setEditingNotesId(lead.id); setTempNotes(lead.notes || ''); }}>
-                                  📝 {lead.notes ? <span>{lead.notes}</span> : <span style={{ color: '#94a3b8' }}>+ Notitie toevoegen</span>}
+                            {/* Candidate info */}
+                            <td style={{ padding: '14px 16px' }}>
+                              <div style={{ fontWeight: 800, color: '#001a33', fontSize: '0.95rem' }}>{lead.name}</div>
+                              {lead.gender && (
+                                <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                                  {lead.gender} • Geb. {lead.birthDate || 'onbekend'} {lead.birthPlace ? `(${lead.birthPlace})` : ''}
                                 </div>
                               )}
-                            </div>
-                          </td>
+                              {lead.address && (
+                                <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                                  📍 {lead.address}, {lead.postalCity}
+                                </div>
+                              )}
+                            </td>
 
-                          {/* Contact Info */}
-                          <td style={{ padding: '14px 16px' }}>
-                            <div>
-                              <a href={`tel:${lead.phone}`} style={{ color: '#001a33', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                <PhoneCall size={13} color="#2563eb" /> {lead.phone}
-                              </a>
-                            </div>
-                            <div style={{ marginTop: '4px' }}>
-                              <a href={`mailto:${lead.email}`} style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                <Mail size={13} /> {lead.email}
-                              </a>
-                            </div>
-                          </td>
+                            {/* Type & Details */}
+                            <td style={{ padding: '14px 16px' }}>
+                              <span style={{ display: 'inline-block', background: '#f1f5f9', color: '#334155', padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px' }}>
+                                {typeLabels[lead.type] || lead.type}
+                              </span>
+                              {lead.packageChoice && (
+                                <div style={{ fontWeight: 600, color: '#0284c7', fontSize: '0.85rem' }}>
+                                  🏷️ {lead.packageChoice}
+                                </div>
+                              )}
+                              {lead.preferredDate && (
+                                <div style={{ color: '#475569', fontSize: '0.8rem', marginTop: '2px' }}>
+                                  🗓️ {lead.preferredDate}
+                                </div>
+                              )}
+                              {lead.message && (
+                                <div style={{ fontSize: '0.78rem', color: '#64748b', fontStyle: 'italic', marginTop: '4px', maxWidth: '320px' }}>
+                                  "{lead.message}"
+                                </div>
+                              )}
 
-                          {/* Date */}
-                          <td style={{ padding: '14px 16px', color: '#64748b', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <Clock size={12} /> {new Date(lead.createdAt).toLocaleDateString('nl-NL')}
-                            </div>
-                            <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                              {new Date(lead.createdAt).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
-                            </div>
-                          </td>
+                              {/* Internal Notes */}
+                              <div style={{ marginTop: '6px' }}>
+                                {editingNotesId === lead.id ? (
+                                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                    <input
+                                      type="text"
+                                      value={tempNotes}
+                                      onChange={(e) => setTempNotes(e.target.value)}
+                                      placeholder="Notitie toevoegen..."
+                                      style={{ fontSize: '0.78rem', padding: '2px 6px', border: '1px solid #cbd5e1', borderRadius: '4px' }}
+                                    />
+                                    <button onClick={() => handleSaveNotes(lead.id)} style={{ fontSize: '0.75rem', padding: '2px 8px', background: '#001a33', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Opslaan</button>
+                                    <button onClick={() => setEditingNotesId(null)} style={{ fontSize: '0.75rem', padding: '2px 6px', background: 'none', border: 'none', cursor: 'pointer' }}>Annuleer</button>
+                                  </div>
+                                ) : (
+                                  <div style={{ fontSize: '0.78rem', color: '#059669', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }} onClick={() => { setEditingNotesId(lead.id); setTempNotes(lead.notes || ''); }}>
+                                    📝 {lead.notes ? <span>{lead.notes}</span> : <span style={{ color: '#94a3b8' }}>+ Notitie toevoegen</span>}
+                                  </div>
+                                )}
+                              </div>
+                            </td>
 
-                          {/* Actions */}
-                          <td style={{ padding: '14px 16px', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                            <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', alignItems: 'center' }}>
-                              {/* WhatsApp link */}
-                              <a
-                                href={getWhatsAppLink(lead)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="WhatsApp sturen met begroeting"
-                                style={{ background: '#25D366', color: '#fff', padding: '6px 8px', borderRadius: '6px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-                              >
-                                <MessageSquare size={14} />
-                              </a>
+                            {/* Contact Info */}
+                            <td style={{ padding: '14px 16px' }}>
+                              <div>
+                                <a href={`tel:${lead.phone}`} style={{ color: '#001a33', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <PhoneCall size={13} color="#2563eb" /> {lead.phone}
+                                </a>
+                              </div>
+                              <div style={{ marginTop: '4px' }}>
+                                <a href={`mailto:${lead.email}`} style={{ color: '#64748b', textDecoration: 'none', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <Mail size={13} /> {lead.email}
+                                </a>
+                              </div>
+                            </td>
 
-                              {/* Copy for Dation */}
-                              <button
-                                onClick={() => handleCopyDation(lead)}
-                                title="Kopieer gegevens geformatteerd voor Dation Rijlesplanner"
-                                style={{ background: copiedId === lead.id ? '#10b981' : '#f1f5f9', color: copiedId === lead.id ? '#fff' : '#001a33', border: 'none', padding: '6px 8px', borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 600 }}
-                              >
-                                {copiedId === lead.id ? <Check size={14} /> : <Copy size={14} />}
-                                {copiedId === lead.id ? 'Gekopieerd!' : 'Dation'}
-                              </button>
+                            {/* Date */}
+                            <td style={{ padding: '14px 16px', color: '#64748b', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <Clock size={12} /> {new Date(lead.createdAt).toLocaleDateString('nl-NL')}
+                              </div>
+                              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                                {new Date(lead.createdAt).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
+                              </div>
+                            </td>
 
-                              {/* Delete */}
-                              <button
-                                onClick={() => handleDelete(lead.id, lead.name)}
-                                title="Aanvraag verwijderen"
-                                style={{ background: 'none', border: 'none', color: '#cbd5e1', cursor: 'pointer', padding: '4px' }}
-                                onMouseEnter={(e) => (e.currentTarget.style.color = '#ef4444')}
-                                onMouseLeave={(e) => (e.currentTarget.style.color = '#cbd5e1')}
-                              >
-                                <Trash2 size={16} />
-                              </button>
+                            {/* Actions */}
+                            <td style={{ padding: '14px 16px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                              <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', alignItems: 'center' }}>
+                                <a
+                                  href={getWhatsAppLink(lead)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="WhatsApp sturen"
+                                  style={{ background: '#25D366', color: '#fff', padding: '6px 8px', borderRadius: '6px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                  <MessageSquare size={14} />
+                                </a>
+
+                                <button
+                                  onClick={() => handleCopyDation(lead)}
+                                  title="Kopieer voor Dation"
+                                  style={{ background: copiedId === lead.id ? '#10b981' : '#f1f5f9', color: copiedId === lead.id ? '#fff' : '#001a33', border: 'none', padding: '6px 8px', borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', fontWeight: 600 }}
+                                >
+                                  {copiedId === lead.id ? <Check size={14} /> : <Copy size={14} />}
+                                  {copiedId === lead.id ? 'Gekopieerd!' : 'Dation'}
+                                </button>
+
+                                <button
+                                  onClick={() => handleDelete(lead.id, lead.name)}
+                                  title="Verwijderen"
+                                  style={{ background: 'none', border: 'none', color: '#cbd5e1', cursor: 'pointer', padding: '4px' }}
+                                  onMouseEnter={(e) => (e.currentTarget.style.color = '#ef4444')}
+                                  onMouseLeave={(e) => (e.currentTarget.style.color = '#cbd5e1')}
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Cards View (Visible on smartphones) */}
+                <div className="admin-cards-mobile" style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '12px' }}>
+                  {filteredLeads.map((lead) => {
+                    const statusColors: Record<LeadStatus, { bg: string; text: string }> = {
+                      nieuw: { bg: '#fef3c7', text: '#b45309' },
+                      in_behandeling: { bg: '#e0f2fe', text: '#0369a1' },
+                      ingepland: { bg: '#f3e8ff', text: '#7e22ce' },
+                      ingeschreven: { bg: '#dcfce7', text: '#15803d' },
+                      gearchiveerd: { bg: '#f1f5f9', text: '#64748b' },
+                    };
+
+                    const typeLabels: Record<string, string> = {
+                      registration: 'Aanmelding',
+                      trial_lesson: 'Proefles',
+                      callback: 'Terugbelverzoek',
+                      contact: 'Bericht',
+                    };
+
+                    const currentStatusColor = statusColors[lead.status] || statusColors.nieuw;
+
+                    return (
+                      <div key={lead.id} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                        {/* Header: Name + Status */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px', gap: '8px' }}>
+                          <div>
+                            <div style={{ fontWeight: 800, color: '#001a33', fontSize: '1.05rem' }}>{lead.name}</div>
+                            <span style={{ display: 'inline-block', background: '#f1f5f9', color: '#475569', padding: '2px 6px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700, marginTop: '2px' }}>
+                              {typeLabels[lead.type] || lead.type}
+                            </span>
+                          </div>
+
+                          <select
+                            value={lead.status}
+                            onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
+                            style={{
+                              background: currentStatusColor.bg,
+                              color: currentStatusColor.text,
+                              border: 'none',
+                              padding: '6px 10px',
+                              borderRadius: '6px',
+                              fontWeight: 700,
+                              fontSize: '0.8rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <option value="nieuw">Nieuw</option>
+                            <option value="in_behandeling">In behandeling</option>
+                            <option value="ingepland">Ingepland</option>
+                            <option value="ingeschreven">Ingeschreven</option>
+                            <option value="gearchiveerd">Gearchiveerd</option>
+                          </select>
+                        </div>
+
+                        {/* Details */}
+                        <div style={{ fontSize: '0.85rem', color: '#475569', lineHeight: 1.6, marginBottom: '12px' }}>
+                          {lead.packageChoice && (
+                            <div style={{ color: '#0284c7', fontWeight: 700 }}>
+                              🏷️ {lead.packageChoice}
                             </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                          )}
+                          {lead.preferredDate && (
+                            <div>🗓️ Voorkeur: {lead.preferredDate}</div>
+                          )}
+                          {lead.address && (
+                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                              📍 {lead.address}, {lead.postalCity}
+                            </div>
+                          )}
+                          {lead.message && (
+                            <div style={{ fontSize: '0.8rem', color: '#64748b', fontStyle: 'italic', marginTop: '4px', background: '#f8fafc', padding: '6px 10px', borderRadius: '4px' }}>
+                              "{lead.message}"
+                            </div>
+                          )}
+                          <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '6px' }}>
+                            Ontvangen: {new Date(lead.createdAt).toLocaleDateString('nl-NL')} om {new Date(lead.createdAt).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+
+                        {/* Notes */}
+                        <div style={{ marginBottom: '14px', fontSize: '0.8rem' }}>
+                          {editingNotesId === lead.id ? (
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                              <input
+                                type="text"
+                                value={tempNotes}
+                                onChange={(e) => setTempNotes(e.target.value)}
+                                placeholder="Notitie..."
+                                style={{ flex: 1, padding: '6px 8px', fontSize: '0.85rem', border: '1px solid #cbd5e1', borderRadius: '4px' }}
+                              />
+                              <button onClick={() => handleSaveNotes(lead.id)} style={{ padding: '6px 12px', background: '#001a33', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 700 }}>OK</button>
+                            </div>
+                          ) : (
+                            <div onClick={() => { setEditingNotesId(lead.id); setTempNotes(lead.notes || ''); }} style={{ color: '#059669', cursor: 'pointer' }}>
+                              📝 {lead.notes ? <strong>{lead.notes}</strong> : <span style={{ color: '#94a3b8' }}>+ Notitie toevoegen</span>}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Mobile Action Buttons Bar */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr auto', gap: '8px', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid #f1f5f9' }}>
+                          <a
+                            href={getWhatsAppLink(lead)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ background: '#25D366', color: '#fff', padding: '10px 8px', borderRadius: '6px', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 700 }}
+                          >
+                            <MessageSquare size={16} /> WhatsApp
+                          </a>
+
+                          <a
+                            href={`tel:${lead.phone}`}
+                            style={{ background: '#001a33', color: '#fff', padding: '10px 8px', borderRadius: '6px', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 700 }}
+                          >
+                            <PhoneCall size={14} /> Bellen
+                          </a>
+
+                          <button
+                            onClick={() => handleCopyDation(lead)}
+                            style={{ background: copiedId === lead.id ? '#10b981' : '#f1f5f9', color: copiedId === lead.id ? '#fff' : '#001a33', border: 'none', padding: '10px 8px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '0.82rem', fontWeight: 700 }}
+                          >
+                            {copiedId === lead.id ? <Check size={14} /> : <Copy size={14} />}
+                            {copiedId === lead.id ? 'Gekopieerd' : 'Dation'}
+                          </button>
+
+                          <button
+                            onClick={() => handleDelete(lead.id, lead.name)}
+                            style={{ background: '#fee2e2', color: '#ef4444', border: 'none', padding: '10px 10px', borderRadius: '6px', cursor: 'pointer' }}
+                            title="Verwijderen"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>

@@ -102,8 +102,21 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle navigation"
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            <span style={{ fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
+              {mobileMenuOpen ? 'Sluit menu' : 'Menu'}
+            </span>
           </button>
+
+          <div className="nav__mobile-cta">
+            <button
+              type="button"
+              className="nav__proefles-btn"
+              onClick={() => handleNavClick('aanmelden')}
+            >
+              Gratis Proefles
+            </button>
+          </div>
 
           <ul className={`nav__list ${mobileMenuOpen ? 'open' : ''}`}>
             {navItems.map((item) => (
