@@ -79,8 +79,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <div className="container tiser__content">
             <div className="tiser__body">
               <div className="tiser__body-inner">
-                <div className="tiser__kicker">
-                  Autorijschool in Enschede & Hengelo
+                <div className="tiser__location-text">
+                  Autorijschool in Enschede &amp; Hengelo
                 </div>
                 <div className="tiser__title-wrap">
                   <h2 className="tiser__title">{slides[activeSlide].title}</h2>
@@ -298,9 +298,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         <div className="home-intro__container">
           <div className="home-intro__grid">
             <div>
-              <span className="home-intro__kicker">
-                Lokaal & Betrokken in Twente
-              </span>
               <h2 className="home-intro__title">
                 Rijschool TEEZ in Enschede & Hengelo
               </h2>
