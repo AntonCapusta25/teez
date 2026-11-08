@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import { Resend } from 'resend';
 import nodemailer from 'nodemailer';
 
 interface SendEmailPayload {
@@ -40,9 +41,9 @@ export async function handleSendEmail(req: IncomingMessage, res: ServerResponse)
       const data: SendEmailPayload = JSON.parse(body);
       const lead = data.lead;
 
-      const senderEmail = process.env.GOOGLE_EMAIL || 'info@autoflowstudio.net';
-      const senderPassword = process.env.GOOGLE_APP_PASSWORD || '';
-      const recipientEmail = data.to || process.env.NOTIFICATION_EMAIL || 'info@rijschoolteez.nl';
+      const resendApiKey = process.env.RESEND_API_KEY;
+      const recipientEmail = process.env.NOTIFICATION_EMAIL || data.to || 'bangalexf@gmail.com';
+      const fromEmail = process.env.FROM_EMAIL || 'Rijschool TEEZ <onboarding@resend.dev>';
 
       // Type title in Dutch
       const typeTitles: Record<string, string> = {
@@ -128,52 +129,79 @@ export async function handleSendEmail(req: IncomingMessage, res: ServerResponse)
           </div>
           
           <div style="background-color: #f1f5f9; padding: 16px; text-align: center; font-size: 12px; color: #94a3b8;">
-            Verzonden via Google Workspace (${senderEmail}) naar ${recipientEmail}
+            Verzonden via Rijschool TEEZ notificatiesysteem naar ${recipientEmail}
           </div>
         </div>
       `;
 
-      // Check if credentials exist
-      if (!senderPassword) {
-        console.log(`[Google Workspace Sendmail] Simulation Mode (GOOGLE_APP_PASSWORD not set in .env):`);
-        console.log(`From: ${senderEmail} -> To: ${recipientEmail}`);
-        console.log(`Subject: ${subject}`);
+      // 1. Preferred: Resend API
+      if (resendApiKey) {
+        const resend = new Resend(resendApiKey);
+        const { data: resendData, error: resendError } = await resend.emails.send({
+          from: fromEmail,
+          to: recipientEmail,
+          replyTo: lead.email,
+          subject: subject,
+          html: html,
+        });
+
+        if (resendError) {
+          console.error('[Resend Error]', resendError);
+          res.statusCode = 400;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: resendError.message, details: resendError }));
+          return;
+        }
+
+        console.log('[Resend Sent]:', resendData?.id);
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({
-          success: true,
-          mode: 'simulated',
-          message: 'Simulated send: Set GOOGLE_APP_PASSWORD in .env for live Google Workspace SMTP sending.',
-        }));
+        res.end(JSON.stringify({ success: true, messageId: resendData?.id }));
         return;
       }
 
-      // Live Google Workspace SMTP Transporter
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true, // SSL
-        auth: {
-          user: senderEmail,
-          pass: senderPassword,
-        },
-      });
+      // 2. Fallback: Google Workspace SMTP
+      const senderEmail = process.env.GOOGLE_EMAIL || 'info@autoflowstudio.net';
+      const senderPassword = process.env.GOOGLE_APP_PASSWORD || '';
 
-      const info = await transporter.sendMail({
-        from: `"Rijschool TEEZ" <${senderEmail}>`,
-        to: recipientEmail,
-        replyTo: lead.email,
-        subject: subject,
-        html: html,
-      });
+      if (senderPassword) {
+        const transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true,
+          auth: {
+            user: senderEmail,
+            pass: senderPassword,
+          },
+        });
 
-      console.log('[Google Workspace Sendmail] Sent:', info.messageId);
+        const info = await transporter.sendMail({
+          from: `"Rijschool TEEZ" <${senderEmail}>`,
+          to: recipientEmail,
+          replyTo: lead.email,
+          subject: subject,
+          html: html,
+        });
 
+        console.log('[Google Workspace SMTP Sent]:', info.messageId);
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ success: true, messageId: info.messageId }));
+        return;
+      }
+
+      // 3. Fallback: Simulated Send
+      console.log(`[Sendmail Simulated Mode]:`);
+      console.log(`To: ${recipientEmail} | Subject: ${subject}`);
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ success: true, messageId: info.messageId }));
+      res.end(JSON.stringify({
+        success: true,
+        mode: 'simulated',
+        message: 'Simulated send: RESEND_API_KEY or GOOGLE_APP_PASSWORD not set.',
+      }));
     } catch (err: unknown) {
-      console.error('[Google Workspace Sendmail Error]', err);
+      console.error('[Sendmail Server Error]', err);
       res.statusCode = 500;
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({ error: String(err) }));

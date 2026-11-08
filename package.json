@@ -14,7 +14,8 @@
     "lucide-react": "^1.68.0",
     "nodemailer": "^10.3.1",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "resend": "^6.37.0"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
