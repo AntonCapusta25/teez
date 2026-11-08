@@ -42,8 +42,9 @@ export async function handleSendEmail(req: IncomingMessage, res: ServerResponse)
       const lead = data.lead;
 
       const resendApiKey = process.env.RESEND_API_KEY;
-      const recipientEmail = process.env.NOTIFICATION_EMAIL || data.to || 'bangalexf@gmail.com';
-      const fromEmail = process.env.FROM_EMAIL || 'Rijschool TEEZ <onboarding@resend.dev>';
+      const rawRecipients = process.env.NOTIFICATION_EMAIL || data.to || 'info@rijschoolteez.nl';
+      const toRecipients = rawRecipients.split(',').map((s) => s.trim()).filter(Boolean);
+      const fromEmail = process.env.FROM_EMAIL || 'Rijschool TEEZ <noreply@rijschoolteez.nl>';
 
       // Type title in Dutch
       const typeTitles: Record<string, string> = {
@@ -55,8 +56,8 @@ export async function handleSendEmail(req: IncomingMessage, res: ServerResponse)
       const title = typeTitles[lead.type] || 'Nieuw bericht';
       const subject = `[${title}] ${lead.name} ${lead.package ? `- ${lead.package}` : ''}`;
 
-      // Build HTML Email
-      const html = `
+      // Build HTML Email for Instructor
+      const instructorHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
           <div style="background-color: #001a33; padding: 24px; text-align: center;">
             <h1 style="color: #ffea00; margin: 0; font-size: 24px; letter-spacing: 1px;">RIJSCHOOL TEEZ</h1>
@@ -129,7 +130,60 @@ export async function handleSendEmail(req: IncomingMessage, res: ServerResponse)
           </div>
           
           <div style="background-color: #f1f5f9; padding: 16px; text-align: center; font-size: 12px; color: #94a3b8;">
-            Verzonden via Rijschool TEEZ notificatiesysteem naar ${recipientEmail}
+            Verzonden via Rijschool TEEZ notificatiesysteem naar ${toRecipients.join(', ')}
+          </div>
+        </div>
+      `;
+
+      // Build HTML Confirmation Email for Student / Customer
+      const studentSubject = lead.type === 'registration'
+        ? 'Bevestiging van je aanmelding bij Rijschool TEEZ'
+        : lead.type === 'trial_lesson'
+        ? 'Aanvraag gratis proefles ontvangen - Rijschool TEEZ'
+        : 'We hebben je bericht ontvangen - Rijschool TEEZ';
+
+      const studentHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; color: #1e293b;">
+          <div style="background-color: #001a33; padding: 24px; text-align: center;">
+            <h1 style="color: #ffea00; margin: 0; font-size: 24px; letter-spacing: 1px;">RIJSCHOOL TEEZ</h1>
+            <p style="color: #ffffff; margin: 6px 0 0; font-size: 14px;">Bedankt voor je aanvraag!</p>
+          </div>
+          
+          <div style="padding: 28px; background-color: #ffffff;">
+            <h2 style="font-size: 18px; color: #001a33; margin-top: 0;">Beste ${lead.name},</h2>
+            
+            <p style="font-size: 15px; line-height: 1.6; color: #334155;">
+              ${lead.type === 'registration' 
+                ? 'Hartelijk dank voor je aanmelding bij Rijschool TEEZ! We hebben je inschrijving succesvol ontvangen.'
+                : lead.type === 'trial_lesson'
+                ? 'Wat leuk dat je hebt gekozen voor een gratis proefles bij Rijschool TEEZ! We hebben je aanvraag in goede orde ontvangen.'
+                : 'Bedankt voor je bericht aan Rijschool TEEZ. We hebben je vraag goed ontvangen.'
+              }
+            </p>
+
+            <div style="background-color: #f8fafc; border-left: 4px solid #ffea00; padding: 16px; margin: 20px 0; border-radius: 0 6px 6px 0;">
+              <p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.6;">
+                <strong>Wat gebeurt er nu?</strong><br>
+                Instructeur Fawad neemt zo spoedig mogelijk (meestal binnen 24 uur) telefonisch of via WhatsApp contact met je op om kennis te maken en je les in te plannen.
+              </p>
+            </div>
+
+            ${lead.package ? `
+              <div style="margin-bottom: 20px; font-size: 14px; color: #475569;">
+                <strong>Gekozen rijlespakket:</strong> <span style="color: #0284c7; font-weight: bold;">${lead.package}</span>
+              </div>
+            ` : ''}
+
+            <p style="font-size: 14px; line-height: 1.6; color: #64748b;">
+              Heb je al een vraag of wil je direct iets afstemmen? Je kunt instructeur Fawad altijd direct bereiken via WhatsApp of bellen op <a href="tel:0681819484" style="color: #001a33; font-weight: bold; text-decoration: none;">06 818 194 84</a>.
+            </p>
+
+            <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid #f1f5f9; font-size: 14px; color: #64748b;">
+              Met vriendelijke groet,<br>
+              <strong style="color: #001a33; font-size: 15px;">Fawad Ahmadyar</strong><br>
+              <span style="font-size: 13px;">Rijschool TEEZ • Enschede, Hengelo & Twente</span><br>
+              <a href="https://rijschoolteez.nl" style="color: #0284c7; font-size: 13px; text-decoration: none;">www.rijschoolteez.nl</a>
+            </div>
           </div>
         </div>
       `;
@@ -137,12 +191,14 @@ export async function handleSendEmail(req: IncomingMessage, res: ServerResponse)
       // 1. Preferred: Resend API
       if (resendApiKey) {
         const resend = new Resend(resendApiKey);
+
+        // Send Notification Email to Instructor(s)
         const { data: resendData, error: resendError } = await resend.emails.send({
           from: fromEmail,
-          to: recipientEmail,
+          to: toRecipients,
           replyTo: lead.email,
           subject: subject,
-          html: html,
+          html: instructorHtml,
         });
 
         if (resendError) {
@@ -153,7 +209,23 @@ export async function handleSendEmail(req: IncomingMessage, res: ServerResponse)
           return;
         }
 
-        console.log('[Resend Sent]:', resendData?.id);
+        console.log('[Resend Instructor Notification Sent]:', resendData?.id);
+
+        // Send Confirmation / Thank-you Email to Customer if valid email provided
+        if (lead.email && lead.email.includes('@') && !lead.email.includes('example.com')) {
+          resend.emails.send({
+            from: fromEmail,
+            to: [lead.email],
+            replyTo: 'info@rijschoolteez.nl',
+            subject: studentSubject,
+            html: studentHtml,
+          }).then((r) => {
+            console.log('[Resend Student Confirmation Sent]:', r.data?.id);
+          }).catch((err) => {
+            console.warn('[Resend Student Confirmation Error]:', err);
+          });
+        }
+
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({ success: true, messageId: resendData?.id }));
@@ -177,10 +249,10 @@ export async function handleSendEmail(req: IncomingMessage, res: ServerResponse)
 
         const info = await transporter.sendMail({
           from: `"Rijschool TEEZ" <${senderEmail}>`,
-          to: recipientEmail,
+          to: toRecipients.join(', '),
           replyTo: lead.email,
           subject: subject,
-          html: html,
+          html: instructorHtml,
         });
 
         console.log('[Google Workspace SMTP Sent]:', info.messageId);
@@ -192,7 +264,7 @@ export async function handleSendEmail(req: IncomingMessage, res: ServerResponse)
 
       // 3. Fallback: Simulated Send
       console.log(`[Sendmail Simulated Mode]:`);
-      console.log(`To: ${recipientEmail} | Subject: ${subject}`);
+      console.log(`To: ${toRecipients.join(', ')} | Subject: ${subject}`);
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({
