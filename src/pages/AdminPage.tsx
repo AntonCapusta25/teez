@@ -110,7 +110,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
       sessionStorage.setItem('teez_admin_auth', 'true');
       setAuthError(null);
     } else {
-      setAuthError('Onjuiste pincode. Standaard code is: teez2026');
+      setAuthError('Onjuiste pincode. Probeer het opnieuw.');
     }
   };
 
@@ -356,7 +356,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                 type="password"
                 required
                 className="form-input"
-                placeholder="Pincode (standaard: teez2026)"
+                placeholder="Voer beheer pincode in"
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
                 autoFocus
@@ -368,14 +368,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
             </button>
           </form>
 
-          <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <button
               onClick={onNavigateHome}
               style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               ← Terug naar website
             </button>
-            <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Code: <code>teez2026</code></span>
           </div>
         </div>
       </div>
@@ -1101,14 +1100,14 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                 <div className="form-group">
                   <label className="form-label">Admin Beheer Pincode *</label>
                   <input
-                    type="text"
+                    type="password"
                     required
                     className="form-input"
                     value={settings.adminPin}
                     onChange={(e) => setSettings({ ...settings, adminPin: e.target.value })}
                   />
                   <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '4px' }}>
-                    De pincode om in te loggen op dit beheerpaneel (bijv. <code>teez2026</code>)
+                    Wijzig hier jouw persoonlijke pincode voor toegang tot het beheerpaneel.
                   </div>
                 </div>
               </div>

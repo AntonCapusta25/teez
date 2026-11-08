@@ -37,7 +37,7 @@ export interface AdminSettings {
 }
 
 const DEFAULT_SETTINGS: AdminSettings = {
-  adminPin: 'teez2026',
+  adminPin: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_ADMIN_PIN) || 'teez2026',
   notificationEmail: 'info@rijschoolteez.nl',
   webhookUrl: '',
   notifyOnRegistration: true,
