@@ -540,6 +540,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                   <option value="in_behandeling">In behandeling</option>
                   <option value="ingepland">Ingepland</option>
                   <option value="ingeschreven">Ingeschreven</option>
+                  <option value="afgerond">Afgerond</option>
                   <option value="gearchiveerd">Gearchiveerd</option>
                 </select>
               </div>
@@ -596,6 +597,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                           in_behandeling: { bg: '#e0f2fe', text: '#0369a1' },
                           ingepland: { bg: '#f3e8ff', text: '#7e22ce' },
                           ingeschreven: { bg: '#dcfce7', text: '#15803d' },
+                          afgerond: { bg: '#e2e8f0', text: '#334155' },
                           gearchiveerd: { bg: '#f1f5f9', text: '#64748b' },
                         };
 
@@ -630,6 +632,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                                 <option value="in_behandeling">In behandeling</option>
                                 <option value="ingepland">Ingepland</option>
                                 <option value="ingeschreven">Ingeschreven</option>
+                                <option value="afgerond">Afgerond</option>
                                 <option value="gearchiveerd">Gearchiveerd</option>
                               </select>
                             </td>
@@ -764,6 +767,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                       in_behandeling: { bg: '#e0f2fe', text: '#0369a1' },
                       ingepland: { bg: '#f3e8ff', text: '#7e22ce' },
                       ingeschreven: { bg: '#dcfce7', text: '#15803d' },
+                      afgerond: { bg: '#e2e8f0', text: '#334155' },
                       gearchiveerd: { bg: '#f1f5f9', text: '#64748b' },
                     };
 
@@ -805,6 +809,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                             <option value="in_behandeling">In behandeling</option>
                             <option value="ingepland">Ingepland</option>
                             <option value="ingeschreven">Ingeschreven</option>
+                            <option value="afgerond">Afgerond</option>
                             <option value="gearchiveerd">Gearchiveerd</option>
                           </select>
                         </div>

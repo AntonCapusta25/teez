@@ -2,7 +2,7 @@
 // Supports persistent localStorage and Supabase sync
 
 export type LeadType = 'registration' | 'trial_lesson' | 'contact' | 'callback';
-export type LeadStatus = 'nieuw' | 'in_behandeling' | 'ingepland' | 'ingeschreven' | 'gearchiveerd';
+export type LeadStatus = 'nieuw' | 'in_behandeling' | 'ingepland' | 'ingeschreven' | 'afgerond' | 'gearchiveerd';
 
 export interface Lead {
   id: string;
@@ -47,65 +47,10 @@ const DEFAULT_SETTINGS: AdminSettings = {
   cbrTopUrl: 'https://top.cbr.nl/',
 };
 
-const LEADS_KEY = 'teez_admin_leads_v1';
-const SETTINGS_KEY = 'teez_admin_settings_v1';
+import { HISTORICAL_LEADS } from './historicalLeads';
 
-// Seed sample leads if local store is empty so admin is immediately demonstrative
-const SAMPLE_LEADS: Lead[] = [
-  {
-    id: 'lead-001',
-    type: 'registration',
-    name: 'Sanne van Dijk',
-    email: 'sanne.vandijk@gmail.com',
-    phone: '06 14253647',
-    status: 'nieuw',
-    createdAt: new Date(Date.now() - 1000 * 60 * 42).toISOString(), // 42 mins ago
-    gender: 'Vrouw',
-    birthDate: '2005-08-14',
-    birthPlace: 'Utrecht',
-    address: 'Amsterdamsestraatweg 142',
-    postalCity: '3551 CN Utrecht',
-    packageChoice: 'Pakket TEEZ',
-    notes: 'Wil zo snel mogelijk beginnen i.v.m. stage.',
-  },
-  {
-    id: 'lead-002',
-    type: 'trial_lesson',
-    name: 'Bilal el Amrani',
-    email: 'bilal.amrani@hotmail.com',
-    phone: '06 82736410',
-    status: 'in_behandeling',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(), // 3 hours ago
-    preferredDate: 'Aanstaande zaterdagochtend rond 10:00',
-    notes: 'Al telefonisch gesproken, zaterdag proefles inplannen in Utrecht Overvecht.',
-  },
-  {
-    id: 'lead-003',
-    type: 'callback',
-    name: 'Emma de Boer',
-    email: 'callback-request@rijschoolteez.nl',
-    phone: '06 91827364',
-    status: 'nieuw',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-    message: 'Terugbelverzoek ontvangen. Voorkeur: Na 17:00 uur (heeft vragen over theoriecursus).',
-  },
-  {
-    id: 'lead-004',
-    type: 'registration',
-    name: 'Lars Meijer',
-    email: 'l.meijer@outlook.com',
-    phone: '06 55443322',
-    status: 'ingeschreven',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 28).toISOString(),
-    gender: 'Man',
-    birthDate: '2004-11-20',
-    birthPlace: 'Nieuwegein',
-    address: 'Batauweg 88',
-    postalCity: '3437 KH Nieuwegein',
-    packageChoice: 'Pakket Z',
-    notes: 'Geregistreerd in Dation Rijlesplanner. Eerste rijles gepland.',
-  },
-];
+const LEADS_KEY = 'teez_admin_leads_v2';
+const SETTINGS_KEY = 'teez_admin_settings_v1';
 
 export function getAdminSettings(): AdminSettings {
   try {
@@ -125,12 +70,12 @@ export function getAllLeads(): Lead[] {
   try {
     const raw = localStorage.getItem(LEADS_KEY);
     if (!raw) {
-      localStorage.setItem(LEADS_KEY, JSON.stringify(SAMPLE_LEADS));
-      return SAMPLE_LEADS;
+      localStorage.setItem(LEADS_KEY, JSON.stringify(HISTORICAL_LEADS));
+      return HISTORICAL_LEADS;
     }
     return JSON.parse(raw);
   } catch {
-    return SAMPLE_LEADS;
+    return HISTORICAL_LEADS;
   }
 }
 
@@ -257,7 +202,7 @@ export function deleteLead(id: string): void {
 }
 
 export function resetLeadsToSample(): void {
-  saveLeads(SAMPLE_LEADS);
+  saveLeads(HISTORICAL_LEADS);
 }
 
 // Format lead into structured text ready to copy-paste into Dation Student CRM
