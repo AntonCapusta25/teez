@@ -12,10 +12,7 @@ import {
   Copy,
   Check,
   Trash2,
-  Settings,
-  Bell,
   RefreshCw,
-  Send,
   MessageSquare,
   Clock,
   Sparkles,
@@ -27,7 +24,6 @@ import {
 import type {
   Lead,
   LeadStatus,
-  AdminSettings,
 } from '../lib/adminStore';
 import type {
   PackagePlan,
@@ -46,10 +42,8 @@ import {
   deleteLead,
   resetLeadsToSample,
   getAdminSettings,
-  saveAdminSettings,
   formatLeadForDation,
   getWhatsAppLink,
-  triggerEmailNotification,
   syncLeadsWithSupabase,
 } from '../lib/adminStore';
 
@@ -67,7 +61,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
 
   // Data & View State
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [activeTab, setActiveTab] = useState<'leads' | 'settings' | 'dation' | 'pricing'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'pricing' | 'dation'>('leads');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -75,10 +69,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
   const [editingNotesId, setEditingNotesId] = useState<string | null>(null);
   const [tempNotes, setTempNotes] = useState('');
 
-  // Settings State
-  const [settings, setSettings] = useState<AdminSettings>(getAdminSettings());
-  const [settingsSaved, setSettingsSaved] = useState(false);
-  const [testEmailStatus, setTestEmailStatus] = useState<string | null>(null);
+  // Settings & Infrastructure Links
+  const settings = getAdminSettings();
 
   // Pricing & Package State
   const [pricingData, setPricingData] = useState<PricingData>(() => getPricingData());
@@ -147,14 +139,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
     updateLeadNotes(id, tempNotes);
     setEditingNotesId(null);
     refreshData();
-  };
-
-  // Save Settings
-  const handleSaveSettings = (e: React.FormEvent) => {
-    e.preventDefault();
-    saveAdminSettings(settings);
-    setSettingsSaved(true);
-    setTimeout(() => setSettingsSaved(false), 3000);
   };
 
   // Pricing Handlers
@@ -243,30 +227,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
         [field]: value,
       },
     }));
-  };
-
-  // Test Email Webhook
-  const handleTestEmail = async () => {
-    setTestEmailStatus('Versturen van testmelding...');
-    const dummyLead: Lead = {
-      id: 'test-' + Date.now(),
-      type: 'registration',
-      name: 'Test Aanmelding',
-      email: settings.notificationEmail,
-      phone: '06 12345678',
-      status: 'nieuw',
-      createdAt: new Date().toISOString(),
-      packageChoice: 'Pakket TEEZ',
-      notes: 'Dit is een geautomatiseerde test om de e-mailnotificaties te verifiëren.',
-    };
-
-    const res = await triggerEmailNotification(dummyLead);
-    if (res.success) {
-      setTestEmailStatus('✅ Testmelding succesvol verstuurd!');
-    } else {
-      setTestEmailStatus(`❌ Mislukt: ${res.message}`);
-    }
-    setTimeout(() => setTestEmailStatus(null), 6000);
   };
 
   // Export CSV
@@ -555,26 +515,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
             }}
           >
             <Tag size={18} /> Tarieven & Pakketten
-          </button>
-
-          <button
-            onClick={() => setActiveTab('settings')}
-            style={{
-              padding: '10px 18px',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              border: 'none',
-              background: 'none',
-              cursor: 'pointer',
-              color: activeTab === 'settings' ? '#001a33' : '#64748b',
-              borderBottom: activeTab === 'settings' ? '3px solid #ffea00' : '3px solid transparent',
-              marginBottom: '-2px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
-          >
-            <Settings size={18} /> E-mail & Notificatie Instellingen
           </button>
         </div>
 
@@ -1055,137 +995,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
           </div>
         )}
 
-        {/* TAB 3: SETTINGS & EMAIL NOTIFICATIONS */}
-        {activeTab === 'settings' && (
-          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '30px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-              <div style={{ width: '48px', height: '48px', background: '#eff6ff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>
-                <Bell size={24} />
-              </div>
-              <div>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#001a33' }}>
-                  E-mail- & Webhook Notificaties
-                </h3>
-                <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
-                  Configureer naar welk e-mailadres nieuwe aanmeldingen verzonden worden.
-                </p>
-              </div>
-            </div>
-
-            {settingsSaved && (
-              <div style={{ background: '#dcfce7', color: '#15803d', border: '1px solid #bbf7d0', padding: '12px 16px', borderRadius: '6px', marginBottom: '20px', fontWeight: 600 }}>
-                ✅ Instellingen succesvol opgeslagen!
-              </div>
-            )}
-
-            <form onSubmit={handleSaveSettings}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginBottom: '24px' }}>
-                
-                {/* Notification Email */}
-                <div className="form-group">
-                  <label className="form-label">Ontvangend E-mailadres *</label>
-                  <input
-                    type="email"
-                    required
-                    className="form-input"
-                    value={settings.notificationEmail}
-                    onChange={(e) => setSettings({ ...settings, notificationEmail: e.target.value })}
-                  />
-                  <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '4px' }}>
-                    Standaard: <code>info@rijschoolteez.nl</code> (zoals in het originele mailarchief)
-                  </div>
-                </div>
-
-                {/* Admin PIN */}
-                <div className="form-group">
-                  <label className="form-label">Admin Beheer Pincode *</label>
-                  <input
-                    type="password"
-                    required
-                    className="form-input"
-                    value={settings.adminPin}
-                    onChange={(e) => setSettings({ ...settings, adminPin: e.target.value })}
-                  />
-                  <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '4px' }}>
-                    Wijzig hier jouw persoonlijke pincode voor toegang tot het beheerpaneel.
-                  </div>
-                </div>
-              </div>
-
-              {/* Webhook / Mail Dispatcher URL */}
-              <div className="form-group" style={{ marginBottom: '24px' }}>
-                <label className="form-label">
-                  E-mail Webhook / API Dispatcher URL (Optioneel voor live SMTP / Formspree)
-                </label>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <input
-                    type="url"
-                    className="form-input"
-                    placeholder="https://formspree.io/f/xyz of https://api.resend.com/..."
-                    value={settings.webhookUrl}
-                    onChange={(e) => setSettings({ ...settings, webhookUrl: e.target.value })}
-                    style={{ flex: 1 }}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleTestEmail}
-                    className="btn btn--outline"
-                    style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '6px' }}
-                  >
-                    <Send size={14} /> Test Notificatie
-                  </button>
-                </div>
-                {testEmailStatus && (
-                  <div style={{ marginTop: '8px', fontSize: '0.85rem', fontWeight: 600, color: testEmailStatus.includes('✅') ? '#16a34a' : '#2563eb' }}>
-                    {testEmailStatus}
-                  </div>
-                )}
-                <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '6px' }}>
-                  💡 Zonder webhook worden alle aanvragen automatisch opgeslagen in dit beheerpaneel en kan de instructeur ze in 1 klik beantwoorden via WhatsApp, telefoon of e-mail.
-                </div>
-              </div>
-
-              {/* Notification Toggles */}
-              <div style={{ background: '#f8fafc', padding: '16px 20px', borderRadius: '8px', marginBottom: '24px' }}>
-                <div style={{ fontWeight: 700, color: '#001a33', marginBottom: '10px', fontSize: '0.9rem' }}>
-                  Actieve Meldingen
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.88rem', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={settings.notifyOnRegistration}
-                      onChange={(e) => setSettings({ ...settings, notifyOnRegistration: e.target.checked })}
-                    />
-                    Melding bij nieuwe volledige Aanmelding (Pakket A, B, C, TEEZ)
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.88rem', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={settings.notifyOnTrialLesson}
-                      onChange={(e) => setSettings({ ...settings, notifyOnTrialLesson: e.target.checked })}
-                    />
-                    Melding bij nieuwe Proeflesaanvraag
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.88rem', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={settings.notifyOnContact}
-                      onChange={(e) => setSettings({ ...settings, notifyOnContact: e.target.checked })}
-                    />
-                    Melding bij Terugbelverzoek & Contactberichten
-                  </label>
-                </div>
-              </div>
-
-              <button type="submit" className="btn">
-                Instellingen Opslaan
-              </button>
-            </form>
-          </div>
-        )}
-
-        {/* TAB 4: PRICING & PLAN MANAGEMENT */}
+        {/* TAB 2: PRICING & PLAN MANAGEMENT */}
         {activeTab === 'pricing' && (
           <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '30px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
             
