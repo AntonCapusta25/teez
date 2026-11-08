@@ -15,7 +15,6 @@ import {
   RefreshCw,
   MessageSquare,
   Clock,
-  Sparkles,
   Tag,
   Plus,
   RotateCcw,
@@ -61,7 +60,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
 
   // Data & View State
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [activeTab, setActiveTab] = useState<'leads' | 'pricing' | 'dation'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'pricing'>('leads');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -475,26 +474,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
             }}
           >
             <Users size={18} /> Aanvragen & Leads ({stats.total})
-          </button>
-
-          <button
-            onClick={() => setActiveTab('dation')}
-            style={{
-              padding: '10px 18px',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-              border: 'none',
-              background: 'none',
-              cursor: 'pointer',
-              color: activeTab === 'dation' ? '#001a33' : '#64748b',
-              borderBottom: activeTab === 'dation' ? '3px solid #ffea00' : '3px solid transparent',
-              marginBottom: '-2px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
-          >
-            <Sparkles size={18} /> Dation Koppeling Info
           </button>
 
           <button
@@ -915,83 +894,6 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
                 </div>
               </div>
             )}
-          </div>
-        )}
-
-        {/* TAB 2: DATION INTEGRATION INFO */}
-        {activeTab === 'dation' && (
-          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '30px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-              <div style={{ width: '48px', height: '48px', background: '#ffea00', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#001a33' }}>
-                <Sparkles size={24} />
-              </div>
-              <div>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#001a33' }}>
-                  Hoe was Rijschool TEEZ verbonden met Dation?
-                </h3>
-                <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
-                  Resultaat uit de analyse van de database en e-mailarchieven.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ lineHeight: 1.7, color: '#334155', fontSize: '0.95rem' }}>
-              <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '8px', borderLeft: '4px solid #0284c7', marginBottom: '24px' }}>
-                <h4 style={{ fontWeight: 700, color: '#0284c7', marginBottom: '6px' }}>
-                  1. De Authentieke Koppeling (WordPress &rarr; Dation)
-                </h4>
-                <p style={{ margin: 0 }}>
-                  Op de originele WordPress-site was er <strong>geen directe API-koppeling</strong> in de broncode. In plaats daarvan was Dation gekoppeld via een speciale widget en app-verwijzing naar <code>https://www.rijlesplanner.nl/</code>.
-                </p>
-                <p style={{ marginTop: '8px', marginBottom: 0 }}>
-                  De tekst in de originele widget luidde:
-                  <br />
-                  <em style={{ color: '#475569' }}>"Rijschool TEEZ maakt gebruik van de rijlesplanner van Dation. Leerlingen kunnen online bekijken hoe ze ervoor staan. Klik op de afbeelding om in te loggen."</em>
-                </p>
-              </div>
-
-              <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '8px', borderLeft: '4px solid #10b981', marginBottom: '24px' }}>
-                <h4 style={{ fontWeight: 700, color: '#10b981', marginBottom: '6px' }}>
-                  2. De Dagelijkse Werkwijze van de Rijschool
-                </h4>
-                <ol style={{ paddingLeft: '20px', margin: '8px 0 0' }}>
-                  <li><strong>Kandidaat meldt zich aan:</strong> Via het formulier op de website (WPForms ID 301).</li>
-                  <li><strong>E-mailnotificatie:</strong> Het formulier verzond direct een e-mail naar <code>info@rijschoolteez.nl</code> (map <code>INBOX/aanmeldingen</code>).</li>
-                  <li><strong>Invoer in Dation:</strong> De instructeur/eigenaar (Fardin) opende Dation Rijlesplanner en voerde de kandidaat in als nieuwe leerling.</li>
-                  <li><strong>Leerling App:</strong> De leerling ontving een welkomstmail met inloggegevens voor de Dation RijlesApp om rijlessen in te zien en voortgang te volgen.</li>
-                </ol>
-              </div>
-
-              <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '8px', borderLeft: '4px solid #f59e0b', marginBottom: '24px' }}>
-                <h4 style={{ fontWeight: 700, color: '#d97706', marginBottom: '6px' }}>
-                  3. Hoe onze nieuwe Admin Portal dit versnelt
-                </h4>
-                <p style={{ margin: 0 }}>
-                  In dit nieuwe beheerpaneel hebben we een <strong>"Dation Kopieerknop"</strong> ingebouwd bij elke aanmelding. Eén klik op die knop formatteert alle NAW-gegevens, geboortedatum en pakketkeuze precies zoals Dation het verwacht, zodat je het zonder typefouten direct in Dation kunt plakken.
-                </p>
-              </div>
-
-              <div style={{ display: 'flex', gap: '14px', marginTop: '20px' }}>
-                <a
-                  href="https://www.rijlesplanner.nl/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <ExternalLink size={16} /> Open Dation Rijlesplanner
-                </a>
-                <a
-                  href="https://dashboard.dation.nl/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn--outline"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <ExternalLink size={16} /> Open Dation Dashboard
-                </a>
-              </div>
-            </div>
           </div>
         )}
 
