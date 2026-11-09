@@ -118,10 +118,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onNavigateHome }) => {
   };
 
   // Delete Lead
-  const handleDelete = (id: string, name: string) => {
+  const handleDelete = async (id: string, name: string) => {
     if (window.confirm(`Weet je zeker dat je de aanvraag van "${name}" wilt verwijderen?`)) {
-      deleteLead(id);
-      refreshData();
+      setLeads((prev) => prev.filter((lead) => lead.id !== id));
+      await deleteLead(id);
+      await refreshData();
     }
   };
 

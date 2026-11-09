@@ -50,7 +50,23 @@ const DEFAULT_SETTINGS: AdminSettings = {
 import { HISTORICAL_LEADS } from './historicalLeads';
 
 const LEADS_KEY = 'teez_admin_leads_v2';
+const DELETED_LEADS_KEY = 'teez_admin_deleted_leads_v2';
 const SETTINGS_KEY = 'teez_admin_settings_v1';
+
+export function getDeletedLeadIds(): Set<string> {
+  try {
+    const raw = localStorage.getItem(DELETED_LEADS_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+export function markLeadDeleted(id: string): void {
+  const set = getDeletedLeadIds();
+  set.add(id);
+  localStorage.setItem(DELETED_LEADS_KEY, JSON.stringify(Array.from(set)));
+}
 
 export function getAdminSettings(): AdminSettings {
   try {
@@ -67,26 +83,37 @@ export function saveAdminSettings(settings: AdminSettings): void {
 }
 
 export function getAllLeads(): Lead[] {
+  const deleted = getDeletedLeadIds();
   try {
     const raw = localStorage.getItem(LEADS_KEY);
+    let leads: Lead[];
     if (!raw) {
-      localStorage.setItem(LEADS_KEY, JSON.stringify(HISTORICAL_LEADS));
-      return HISTORICAL_LEADS;
+      leads = [...HISTORICAL_LEADS];
+      localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
+    } else {
+      leads = JSON.parse(raw);
     }
-    return JSON.parse(raw);
+    return leads.filter((lead) => !deleted.has(lead.id));
   } catch {
-    return HISTORICAL_LEADS;
+    return HISTORICAL_LEADS.filter((lead) => !deleted.has(lead.id));
   }
 }
 
 export function saveLeads(leads: Lead[]): void {
-  localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
+  const deleted = getDeletedLeadIds();
+  const filtered = leads.filter((l) => !deleted.has(l.id));
+  localStorage.setItem(LEADS_KEY, JSON.stringify(filtered));
 }
 
 import { supabase, isSupabaseConfigured } from './supabase';
 
 export async function syncLeadsWithSupabase(): Promise<Lead[]> {
-  if (!isSupabaseConfigured || !supabase) return getAllLeads();
+  const deleted = getDeletedLeadIds();
+  const localLeads = getAllLeads();
+
+  if (!isSupabaseConfigured || !supabase) {
+    return localLeads.filter((l) => !deleted.has(l.id));
+  }
 
   try {
     const [regRes, trialRes, contactRes] = await Promise.all([
@@ -99,66 +126,86 @@ export async function syncLeadsWithSupabase(): Promise<Lead[]> {
 
     if (regRes.data) {
       for (const r of regRes.data) {
-        remoteLeads.push({
-          id: r.id,
-          type: 'registration',
-          name: r.full_name,
-          email: r.email,
-          phone: r.phone,
-          status: r.status || 'nieuw',
-          createdAt: r.created_at,
-          gender: r.gender,
-          birthDate: r.birth_date,
-          birthPlace: r.birth_place,
-          address: r.address,
-          postalCity: r.postal_city,
-          packageChoice: r.package_choice,
-          notes: r.notes,
-        });
+        if (!deleted.has(r.id)) {
+          remoteLeads.push({
+            id: r.id,
+            type: 'registration',
+            name: r.full_name,
+            email: r.email,
+            phone: r.phone,
+            status: r.status || 'nieuw',
+            createdAt: r.created_at,
+            gender: r.gender,
+            birthDate: r.birth_date,
+            birthPlace: r.birth_place,
+            address: r.address,
+            postalCity: r.postal_city,
+            packageChoice: r.package_choice,
+            notes: r.notes,
+          });
+        }
       }
     }
 
     if (trialRes.data) {
       for (const t of trialRes.data) {
-        remoteLeads.push({
-          id: t.id,
-          type: 'trial_lesson',
-          name: t.name,
-          email: t.email,
-          phone: t.phone,
-          status: t.status || 'nieuw',
-          createdAt: t.created_at,
-          preferredDate: t.preferred_date,
-          notes: t.notes,
-        });
+        if (!deleted.has(t.id)) {
+          remoteLeads.push({
+            id: t.id,
+            type: 'trial_lesson',
+            name: t.name,
+            email: t.email,
+            phone: t.phone,
+            status: t.status || 'nieuw',
+            createdAt: t.created_at,
+            preferredDate: t.preferred_date,
+            notes: t.notes,
+          });
+        }
       }
     }
 
     if (contactRes.data) {
       for (const c of contactRes.data) {
-        const isCallback = (c.message || '').includes('Terugbelverzoek');
-        remoteLeads.push({
-          id: c.id,
-          type: isCallback ? 'callback' : 'contact',
-          name: c.name,
-          email: c.email,
-          phone: c.phone,
-          status: c.status || 'nieuw',
-          createdAt: c.created_at,
-          message: c.message,
-        });
+        if (!deleted.has(c.id)) {
+          const isCallback = (c.message || '').includes('Terugbelverzoek');
+          remoteLeads.push({
+            id: c.id,
+            type: isCallback ? 'callback' : 'contact',
+            name: c.name,
+            email: c.email,
+            phone: c.phone,
+            status: c.status || 'nieuw',
+            createdAt: c.created_at,
+            message: c.message,
+          });
+        }
       }
     }
 
-    if (remoteLeads.length > 0) {
-      remoteLeads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      saveLeads(remoteLeads);
-      return remoteLeads;
+    // Merge: start with local & historical leads
+    const mergedMap = new Map<string, Lead>();
+    for (const lead of localLeads) {
+      if (!deleted.has(lead.id)) {
+        mergedMap.set(lead.id, lead);
+      }
     }
-    return getAllLeads();
+
+    // Overlay remote Supabase leads (latest live submissions)
+    for (const remote of remoteLeads) {
+      if (!deleted.has(remote.id)) {
+        mergedMap.set(remote.id, remote);
+      }
+    }
+
+    const merged = Array.from(mergedMap.values());
+    merged.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    saveLeads(merged);
+    return merged;
   } catch (err) {
     console.warn('[Supabase Sync Warning]', err);
-    return getAllLeads();
+    return localLeads.filter((l) => !deleted.has(l.id));
   }
 }
 
@@ -187,6 +234,14 @@ export function updateLeadStatus(id: string, status: LeadStatus): void {
     lead.id === id ? { ...lead, status } : lead
   );
   saveLeads(leads);
+
+  if (isSupabaseConfigured && supabase) {
+    Promise.allSettled([
+      supabase.from('registrations').update({ status }).eq('id', id),
+      supabase.from('trial_lessons').update({ status }).eq('id', id),
+      supabase.from('contact_messages').update({ status }).eq('id', id),
+    ]).catch(() => {});
+  }
 }
 
 export function updateLeadNotes(id: string, notes: string): void {
@@ -194,11 +249,36 @@ export function updateLeadNotes(id: string, notes: string): void {
     lead.id === id ? { ...lead, notes } : lead
   );
   saveLeads(leads);
+
+  if (isSupabaseConfigured && supabase) {
+    Promise.allSettled([
+      supabase.from('registrations').update({ notes }).eq('id', id),
+      supabase.from('trial_lessons').update({ notes }).eq('id', id),
+      supabase.from('contact_messages').update({ message: notes }).eq('id', id),
+    ]).catch(() => {});
+  }
 }
 
-export function deleteLead(id: string): void {
+export async function deleteLead(id: string): Promise<void> {
+  // 1. Mark in persistent blacklist so it never gets resurrected
+  markLeadDeleted(id);
+
+  // 2. Remove from local store
   const leads = getAllLeads().filter((lead) => lead.id !== id);
   saveLeads(leads);
+
+  // 3. Remove from Supabase tables
+  if (isSupabaseConfigured && supabase) {
+    try {
+      await Promise.allSettled([
+        supabase.from('registrations').delete().eq('id', id),
+        supabase.from('trial_lessons').delete().eq('id', id),
+        supabase.from('contact_messages').delete().eq('id', id),
+      ]);
+    } catch (err) {
+      console.warn('[Supabase Delete Error]', err);
+    }
+  }
 }
 
 export function resetLeadsToSample(): void {
