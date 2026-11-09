@@ -44,6 +44,15 @@ export async function handleSendEmail(req: IncomingMessage, res: ServerResponse)
       const resendApiKey = process.env.RESEND_API_KEY;
       const rawRecipients = process.env.NOTIFICATION_EMAIL || data.to || 'info@rijschoolteez.nl';
       const toRecipients = rawRecipients.split(',').map((s) => s.trim()).filter(Boolean);
+
+      // Ensure Fardin receives a direct copy for trial lessons and registrations
+      const FARDIN_EMAIL = 'Fardin.ahmadyar@gmail.com';
+      if (lead.type === 'trial_lesson' || lead.type === 'registration') {
+        if (!toRecipients.some((r) => r.toLowerCase() === FARDIN_EMAIL.toLowerCase())) {
+          toRecipients.push(FARDIN_EMAIL);
+        }
+      }
+
       const fromEmail = process.env.FROM_EMAIL || 'Rijschool TEEZ <noreply@rijschoolteez.nl>';
 
       // Type title in Dutch
