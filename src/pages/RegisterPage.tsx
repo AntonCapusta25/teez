@@ -21,6 +21,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ initialPackage, onNa
   const [postalCity, setPostalCity] = useState('');
   const [packageChoice, setPackageChoice] = useState(initialPackage || 'Pakket EE');
   const [notes, setNotes] = useState('');
+  const [honeypot, setHoneypot] = useState('');
 
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -36,6 +37,11 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ initialPackage, onNa
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honeypot) {
+      setSubmitted(true);
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
 
@@ -51,6 +57,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ initialPackage, onNa
         postal_city: postalCity,
         package_choice: packageChoice,
         notes,
+        honeypot,
       });
       setSubmitted(true);
     } catch (err: unknown) {
@@ -95,6 +102,18 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ initialPackage, onNa
             ) : (
               <form onSubmit={handleSubmit}>
                 {error && <div className="alert-error">{error}</div>}
+
+                {/* Anti-spam honeypot */}
+                <div style={{ display: 'none', position: 'absolute', left: '-9999px' }} aria-hidden="true">
+                  <input
+                    type="text"
+                    name="website_url_hp"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </div>
 
                 {/* 1. Persoonsgegevens */}
                 <h3 style={{ fontSize: '1.15rem', color: '#001a33', fontWeight: 800, marginBottom: '16px', borderBottom: '2px solid #ffea00', paddingBottom: '6px', display: 'inline-block' }}>

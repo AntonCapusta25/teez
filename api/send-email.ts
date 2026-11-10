@@ -41,6 +41,20 @@ export async function handleSendEmail(req: IncomingMessage, res: ServerResponse)
       const data: SendEmailPayload = JSON.parse(body);
       const lead = data.lead;
 
+      // Anti-Spam: Filter automated bot submissions
+      const trimmedName = (lead.name || '').trim();
+      const isBotSpam =
+        (lead.preferredDate && (lead.preferredDate.startsWith('1970') || lead.preferredDate.startsWith('197') || new Date(lead.preferredDate).getFullYear() < 2024)) ||
+        (!trimmedName.includes(' ') && trimmedName.length >= 14 && /[A-Z]/.test(trimmedName) && /[a-z]/.test(trimmedName));
+
+      if (isBotSpam) {
+        console.warn('[Anti-Spam] Filtered bot email dispatch for:', lead.name);
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ success: true, mode: 'filtered_spam' }));
+        return;
+      }
+
       const resendApiKey = process.env.RESEND_API_KEY;
       const rawRecipients = process.env.NOTIFICATION_EMAIL || data.to || 'info@rijschoolteez.nl';
       const toRecipients = rawRecipients.split(',').map((s) => s.trim()).filter(Boolean);

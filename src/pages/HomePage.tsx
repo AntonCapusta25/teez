@@ -36,12 +36,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [preferredDate, setPreferredDate] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleTrialSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honeypot) {
+      // Silently discard bot submission
+      setSubmitted(true);
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
 
@@ -51,6 +58,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         email,
         phone,
         preferred_date: preferredDate,
+        honeypot,
       });
       setSubmitted(true);
     } catch (err: unknown) {
@@ -141,6 +149,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   <div>
                     {error && <div className="alert-error">{error}</div>}
 
+                    {/* Anti-spam honeypot (hidden from humans, filled by bots) */}
+                    <div style={{ display: 'none', position: 'absolute', left: '-9999px' }} aria-hidden="true">
+                      <input
+                        type="text"
+                        name="website_url_hp"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={honeypot}
+                        onChange={(e) => setHoneypot(e.target.value)}
+                      />
+                    </div>
+
                     <div className="control-group">
                       <span className="control-remark">
                         <User size={18} />
@@ -195,6 +215,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                       <input
                         className="inp__control"
                         type="date"
+                        min={new Date().toISOString().split('T')[0]}
                         value={preferredDate}
                         onChange={(e) => setPreferredDate(e.target.value)}
                         title="Geef bij datum de gewenste dag aan voor de proefles"

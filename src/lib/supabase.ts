@@ -44,7 +44,30 @@ export interface ContactSubmission {
 
 import { addLead } from './adminStore';
 
-export async function submitTrialLesson(data: TrialLessonSubmission) {
+export function isBotSpam(name: string, date?: string, honeypot?: string): boolean {
+  // 1. Hidden honeypot was filled
+  if (honeypot && honeypot.trim().length > 0) return true;
+
+  // 2. Automated scanner probe date (e.g. 1970-05-31)
+  if (date && (date.startsWith('1970') || date.startsWith('197') || new Date(date).getFullYear() < 2024)) {
+    return true;
+  }
+
+  // 3. Gibberish bot name with no spaces and high random mixed-case entropy
+  const trimmed = (name || '').trim();
+  if (!trimmed.includes(' ') && trimmed.length >= 14 && /[A-Z]/.test(trimmed) && /[a-z]/.test(trimmed)) {
+    return true;
+  }
+
+  return false;
+}
+
+export async function submitTrialLesson(data: TrialLessonSubmission & { honeypot?: string }) {
+  if (isBotSpam(data.name, data.preferred_date, data.honeypot)) {
+    console.warn('[Anti-Spam] Dropped automated bot trial lesson submission:', data.name);
+    return { success: true, mode: 'filtered' };
+  }
+
   // Always register in Admin CRM store
   addLead({
     type: 'trial_lesson',
@@ -56,7 +79,13 @@ export async function submitTrialLesson(data: TrialLessonSubmission) {
   });
 
   if (isSupabaseConfigured && supabase) {
-    const { error } = await supabase.from('trial_lessons').insert([data]);
+    const { error } = await supabase.from('trial_lessons').insert([{
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      preferred_date: data.preferred_date,
+      notes: data.notes,
+    }]);
     if (error) throw error;
     return { success: true, mode: 'supabase' };
   } else {
@@ -68,7 +97,12 @@ export async function submitTrialLesson(data: TrialLessonSubmission) {
   }
 }
 
-export async function submitRegistration(data: RegistrationSubmission) {
+export async function submitRegistration(data: RegistrationSubmission & { honeypot?: string }) {
+  if (isBotSpam(data.full_name, data.birth_date, data.honeypot)) {
+    console.warn('[Anti-Spam] Dropped automated bot registration submission:', data.full_name);
+    return { success: true, mode: 'filtered' };
+  }
+
   // Always register in Admin CRM store
   addLead({
     type: 'registration',
@@ -85,7 +119,18 @@ export async function submitRegistration(data: RegistrationSubmission) {
   });
 
   if (isSupabaseConfigured && supabase) {
-    const { error } = await supabase.from('registrations').insert([data]);
+    const { error } = await supabase.from('registrations').insert([{
+      full_name: data.full_name,
+      gender: data.gender,
+      email: data.email,
+      phone: data.phone,
+      birth_date: data.birth_date,
+      birth_place: data.birth_place,
+      address: data.address,
+      postal_city: data.postal_city,
+      package_choice: data.package_choice,
+      notes: data.notes,
+    }]);
     if (error) throw error;
     return { success: true, mode: 'supabase' };
   } else {
@@ -97,7 +142,12 @@ export async function submitRegistration(data: RegistrationSubmission) {
   }
 }
 
-export async function submitContact(data: ContactSubmission) {
+export async function submitContact(data: ContactSubmission & { honeypot?: string }) {
+  if (isBotSpam(data.name, undefined, data.honeypot)) {
+    console.warn('[Anti-Spam] Dropped automated bot contact submission:', data.name);
+    return { success: true, mode: 'filtered' };
+  }
+
   const isCallback = data.message.includes('Terugbelverzoek');
   // Always register in Admin CRM store
   addLead({
@@ -109,7 +159,12 @@ export async function submitContact(data: ContactSubmission) {
   });
 
   if (isSupabaseConfigured && supabase) {
-    const { error } = await supabase.from('contact_messages').insert([data]);
+    const { error } = await supabase.from('contact_messages').insert([{
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      message: data.message,
+    }]);
     if (error) throw error;
     return { success: true, mode: 'supabase' };
   } else {

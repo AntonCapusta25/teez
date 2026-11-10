@@ -12,6 +12,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
+  const [honeypot, setHoneypot] = useState('');
 
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -19,6 +20,11 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honeypot) {
+      setSubmitted(true);
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
 
@@ -28,6 +34,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
         email,
         phone,
         message,
+        honeypot,
       });
       setSubmitted(true);
     } catch (err: unknown) {
@@ -269,6 +276,18 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
               ) : (
                 <form onSubmit={handleSubmit}>
                   {error && <div className="alert-error">{error}</div>}
+
+                  {/* Anti-spam honeypot */}
+                  <div style={{ display: 'none', position: 'absolute', left: '-9999px' }} aria-hidden="true">
+                    <input
+                      type="text"
+                      name="website_url_hp"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypot}
+                      onChange={(e) => setHoneypot(e.target.value)}
+                    />
+                  </div>
 
                   <div className="form-group">
                     <label className="form-label">Naam *</label>
