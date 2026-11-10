@@ -82,6 +82,17 @@ export function saveAdminSettings(settings: AdminSettings): void {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
 
+export function isSpamLead(lead: Lead): boolean {
+  if (lead.preferredDate && (lead.preferredDate.startsWith('1970') || lead.preferredDate.startsWith('197') || new Date(lead.preferredDate).getFullYear() < 2024)) {
+    return true;
+  }
+  const trimmed = (lead.name || '').trim();
+  if (!trimmed.includes(' ') && trimmed.length >= 14 && /[A-Z]/.test(trimmed) && /[a-z]/.test(trimmed)) {
+    return true;
+  }
+  return false;
+}
+
 export function getAllLeads(): Lead[] {
   const deleted = getDeletedLeadIds();
   try {
@@ -89,19 +100,22 @@ export function getAllLeads(): Lead[] {
     let leads: Lead[];
     if (!raw) {
       leads = [...HISTORICAL_LEADS];
-      localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
     } else {
       leads = JSON.parse(raw);
     }
-    return leads.filter((lead) => !deleted.has(lead.id));
+    const cleanLeads = leads.filter((lead) => !deleted.has(lead.id) && !isSpamLead(lead));
+    if (leads.length !== cleanLeads.length) {
+      localStorage.setItem(LEADS_KEY, JSON.stringify(cleanLeads));
+    }
+    return cleanLeads;
   } catch {
-    return HISTORICAL_LEADS.filter((lead) => !deleted.has(lead.id));
+    return HISTORICAL_LEADS.filter((lead) => !deleted.has(lead.id) && !isSpamLead(lead));
   }
 }
 
 export function saveLeads(leads: Lead[]): void {
   const deleted = getDeletedLeadIds();
-  const filtered = leads.filter((l) => !deleted.has(l.id));
+  const filtered = leads.filter((l) => !deleted.has(l.id) && !isSpamLead(l));
   localStorage.setItem(LEADS_KEY, JSON.stringify(filtered));
 }
 
@@ -186,14 +200,14 @@ export async function syncLeadsWithSupabase(): Promise<Lead[]> {
     // Merge: start with local & historical leads
     const mergedMap = new Map<string, Lead>();
     for (const lead of localLeads) {
-      if (!deleted.has(lead.id)) {
+      if (!deleted.has(lead.id) && !isSpamLead(lead)) {
         mergedMap.set(lead.id, lead);
       }
     }
 
     // Overlay remote Supabase leads (latest live submissions)
     for (const remote of remoteLeads) {
-      if (!deleted.has(remote.id)) {
+      if (!deleted.has(remote.id) && !isSpamLead(remote)) {
         mergedMap.set(remote.id, remote);
       }
     }
